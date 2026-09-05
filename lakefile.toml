@@ -1,0 +1,19 @@
+name = "percolation_after_anthropic"
+version = "0.1.0"
+defaultTargets = ["KNConjectures", "Hypergraph"]
+
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
+
+[[require]]
+name = "PercolationContinuity"
+git = "https://github.com/anthropics/formal-math"
+rev = "795efb86f191735c5481675763537cfb4ff37e55"
+subDir = "percolation"
+
+[[lean_lib]]
+name = "KNConjectures"
+
+[[lean_lib]]
+name = "Hypergraph"

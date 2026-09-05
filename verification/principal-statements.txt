@@ -1,0 +1,58 @@
+Percolation.Continuity.CSH.percolationContinuity_allDimensions : ∀ (d : Nat),
+  @LE.le Nat instLENat (@OfNat.ofNat Nat (nat_lit 2) (instOfNatNat (nat_lit 2))) d →
+    Percolation.Literature.PercolationContinuity d
+KNAll.Site.site_no_percolation_at_critical : ∀ (d : Nat),
+  @LE.le Nat instLENat (@OfNat.ofNat Nat (nat_lit 3) (instOfNatNat (nat_lit 3))) d →
+    @Eq Real (KNAll.Site.thetaSite d (KNAll.Site.criticalProbSiteI d))
+      (@OfNat.ofNat Real (nat_lit 0) (@Zero.toOfNat0 Real Real.instZero))
+KNAll.Site.site_no_percolation_at_critical_primitive : ∀ (d : Nat),
+  @LE.le Nat instLENat (@OfNat.ofNat Nat (nat_lit 3) (instOfNatNat (nat_lit 3))) d →
+    @Eq Real
+      (@MeasureTheory.Measure.real (Set (Fin d → Int)) (@Set.instMeasurableSpace (Fin d → Int))
+        (@Percolation.Literature.LatticeModels.prodBernoulli (Fin d → Int) fun x => KNAll.Site.criticalProbSiteI d)
+        (@setOf (Set (Fin d → Int)) fun ω =>
+          @Set.Infinite (Fin d → Int)
+            (@setOf (Fin d → Int) fun y =>
+              And
+                (@Membership.mem (Fin d → Int) (Set (Fin d → Int)) (@Set.instMembership (Fin d → Int)) ω
+                  (@OfNat.ofNat (Fin d → Int) (nat_lit 0)
+                    (@Zero.toOfNat0 (Fin d → Int)
+                      (@Pi.instZero (Fin d) (fun a => Int) fun i =>
+                        @MulZeroClass.toZero Int (@instMulZeroClassOfSemiring Int Int.instSemiring)))))
+                (@SimpleGraph.Reachable (Fin d → Int)
+                  (@SimpleGraph.fromRel (Fin d → Int) fun x y =>
+                    And
+                      (@SimpleGraph.Adj (Fin d → Int)
+                        (@SimpleGraph.hasse (Fin d → Int)
+                          (@Pi.preorder (Fin d) (fun a => Int) fun i =>
+                            @PartialOrder.toPreorder Int
+                              (@ConditionallyCompletePartialOrderSup.toPartialOrder Int
+                                (@ConditionallyCompletePartialOrder.toConditionallyCompletePartialOrderSup Int
+                                  (@ConditionallyCompleteLattice.toConditionallyCompletePartialOrder Int
+                                    (@ConditionallyCompleteLinearOrder.toConditionallyCompleteLattice Int
+                                      Int.instConditionallyCompleteLinearOrder))))))
+                        x y)
+                      (And (@Membership.mem (Fin d → Int) (Set (Fin d → Int)) (@Set.instMembership (Fin d → Int)) ω x)
+                        (@Membership.mem (Fin d → Int) (Set (Fin d → Int)) (@Set.instMembership (Fin d → Int)) ω y)))
+                  (@OfNat.ofNat (Fin d → Int) (nat_lit 0)
+                    (@Zero.toOfNat0 (Fin d → Int)
+                      (@Pi.instZero (Fin d) (fun a => Int) fun i =>
+                        @MulZeroClass.toZero Int (@instMulZeroClassOfSemiring Int Int.instSemiring))))
+                  y))))
+      (@OfNat.ofNat Real (nat_lit 0) (@Zero.toOfNat0 Real Real.instZero))
+'Percolation.Continuity.CSH.percolationContinuity_allDimensions' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'KNAll.Site.site_no_percolation_at_critical' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Site.site_phase_transition' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.conjecture1_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.conjecture2Strong_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.conjecture3_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.conjecture4Fixed_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Guarded.conjecture6_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.question5_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.question7_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.question9_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.not_question8EveryMin' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Site.FiniteHyperGluingClosed.hyperedgeGluing' depends on axioms: [propext, Classical.choice, Quot.sound]
+'KNAll.Site.FiniteHyperGluingClosed.pinnedSiteGluing' depends on axioms: [propext, Classical.choice, Quot.sound]

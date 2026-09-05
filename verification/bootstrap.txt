@@ -1,0 +1,8 @@
+Selected output of bash scripts/bootstrap.sh (replayed linter output omitted):
+
+Warning: recommended `curl` version ≥7.70. Found 7.68.0. Can't use `--parallel`.
+Current branch: HEAD
+Using cache from origin: (some leanprover-community/mathlib4)
+No files to download
+Already decompressed 8639 file(s)
+Build completed successfully (9130 jobs).

@@ -1,0 +1,738 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1.05in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\E}{\mathbb E}
+\newcommand{\Pp}{\mathbb P}
+\newcommand{\one}{\mathbf 1}
+\newcommand{\cP}{\mathcal P}
+\newcommand{\cM}{\mathcal M}
+\newcommand{\cB}{\mathcal B}
+\newcommand{\cD}{\mathcal D}
+\newcommand{\cZ}{\mathcal Z}
+\newcommand{\RC}{\phi}
+
+\title{Sharp Boolean--Tutte Completion for\\Finite Random-Cluster Gate Inequalities}
+\author{}
+\date{September 4, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The previously proposed Christoffel--Tutte hierarchy applies
+Cauchy--Schwarz to intersection indicators.  It is valid, but it is not the
+strongest conclusion carried by the same intersection moments.  We replace
+it by an exact finite linear program on gate signatures.  The new bound is
+the largest lower bound valid for every finite event system with the stated
+moments, dominates the Christoffel/Rayleigh bound at every level, and is
+strictly stronger in general.  Its permutation-invariant quotient is a
+finite factorial-moment program.  At order two this gives the sharp
+Dawson--Sankoff bound, which strictly improves the second-moment bound and
+is already exact for two gates.  For finite random-cluster measures the
+same construction has an order-free component-partition expansion.  Every
+dual certificate then gives a coefficientwise nonnegative Tutte-polynomial
+inequality, valid simultaneously for every cluster weight $q>0$.
+
+The requested conclusion for all vertex-transitive graphs is not asserted.
+Taken literally it is false when $p_c=1$ (for example on $\mathbb Z$), and
+the corrected assertion for all transitive graphs with $p_c<1$ remains
+strictly stronger than the results proved here.  The Hutchcroft/Kruskal
+program supplied with the question still requires its stated
+first-reconvergence or nested anti-congestion estimate.  The finite theorem
+below does not imply that estimate without new quantitative input.
+\end{abstract}
+
+\section{Why the Gram hierarchy is not optimal}
+
+Let $(\Omega,\Pp)$ be a finite probability space, let $I$ be a nonempty
+finite set, and let $(E_i)_{i\in I}$ be events.  Put
+\[
+ D=\bigcup_{i\in I}E_i.
+\]
+Suppose that $X\geq0$ and $X=0$ off $D$.  For every nonempty $S\subseteq I$
+write
+\[
+ J_S=\one_{\cap_{i\in S}E_i},\qquad
+ m_S=\E[XJ_S].
+\]
+The Christoffel construction forms the matrix $M_{S,T}=m_{S\cup T}$ and
+uses
+\[
+ \E[X]\geq \frac{(c^{\mathsf T}m)^2}{c^{\mathsf T}Mc}.
+ \tag{1.1}
+\]
+This is Cauchy--Schwarz and is correct.  It nevertheless discards the most
+important fact about the indicators $J_S$: they are monomials of one
+Boolean signature.  Retaining that fact gives an exact linear program.
+
+The loss is already visible for two events.  If
+\[
+ a=\E[X\one_{E_1}],\qquad d=\E[X\one_{E_2}],\qquad
+ c=\E[X\one_{E_1\cap E_2}],
+\]
+then the three numbers used in the degree-one Gram matrix determine the
+answer exactly:
+\[
+ \E[X]=a+d-c.
+ \tag{1.2}
+\]
+By contrast, when $ad>c^2$, the optimized Gram value is
+\[
+ \frac{ad(a+d-2c)}{ad-c^2},
+\]
+and its deficit from (1.2) is
+\[
+ \frac{c(a-c)(d-c)}{ad-c^2}.
+ \tag{1.3}
+\]
+Thus a genuine strengthening must use the Boolean constraints rather than
+another reformulation of the same positive-semidefinite matrix.
+
+\section{The sharp signature program}
+
+For $\omega\in\Omega$, define its gate signature
+\[
+ \sigma(\omega)=\{i\in I:\omega\in E_i\}.
+\]
+For every nonempty $\sigma\subseteq I$, put
+\[
+ z_\sigma=\E\bigl[X;\sigma(\omega)=\sigma\bigr].
+ \tag{2.1}
+\]
+Then
+\[
+ \E[X]=\sum_{\varnothing\ne\sigma\subseteq I}z_\sigma,
+ \qquad
+ m_S=\sum_{\sigma\supseteq S}z_\sigma.
+ \tag{2.2}
+\]
+
+Fix a family
+\(
+ \cM\subseteq\cP(I)\setminus\{\varnothing\}
+\)
+of moments that are to be retained.  For a vector
+$m=(m_S)_{S\in\cM}$ define
+\[
+ \cP_{\cM}(m)=
+ \left\{(u_\sigma)_{\varnothing\ne\sigma\subseteq I}:
+ u_\sigma\geq0,
+ \ \sum_{\sigma\supseteq S}u_\sigma=m_S
+ \text{ for every }S\in\cM
+ \right\}
+\]
+and
+\[
+ \cB_{\cM}(m)=
+ \min_{u\in\cP_{\cM}(m)}
+ \sum_{\varnothing\ne\sigma\subseteq I}u_\sigma.
+ \tag{2.3}
+\]
+The minimum exists whenever the data arise from an event system: the
+actual vector (2.1) is feasible, and intersecting the feasible set with the
+sublevel set determined by its total mass makes the optimization compact.
+
+\begin{theorem}[Sharp Boolean moment completion]\label{thm:signature}
+For every finite event system and every $X\geq0$ supported on $D$,
+\[
+ \boxed{\E[X]\geq\cB_{\cM}(m).}
+ \tag{2.4}
+\]
+Moreover,
+\[
+ \boxed{
+ \cB_{\cM}(m)=
+ \max\left\{
+  \sum_{S\in\cM}c_Sm_S:
+  \sum_{\substack{S\in\cM\\S\subseteq\sigma}}c_S\leq1
+  \text{ for every }\varnothing\ne\sigma\subseteq I
+ \right\}.}
+ \tag{2.5}
+\]
+The maximum is attained.  Among bounds depending only on the listed
+moments and valid for all finite event systems, (2.4) is best possible.
+\end{theorem}
+
+\begin{proof}
+The actual signature masses $z_\sigma$ satisfy (2.2), so they are feasible
+in (2.3).  Their objective is $\E[X]$, proving (2.4).
+
+Let $A$ be the zero-one matrix with rows indexed by $S\in\cM$, columns
+indexed by nonempty $\sigma\subseteq I$, and entries
+$A_{S,\sigma}=\one_{\{S\subseteq\sigma\}}$.  The primal program is
+\[
+ \min\{\mathbf1^{\mathsf T}u:Au=m,\ u\geq0\}.
+\]
+Finite-dimensional linear-programming duality gives
+\[
+ \max\{c^{\mathsf T}m:A^{\mathsf T}c\leq\mathbf1\},
+\]
+which is exactly (2.5).  For completeness, weak duality follows from
+\[
+ c^{\mathsf T}m=c^{\mathsf T}Au
+ =(A^{\mathsf T}c)^{\mathsf T}u
+ \leq\mathbf1^{\mathsf T}u.
+\]
+For the reverse inequality, let $\beta$ be the primal minimum and consider
+the finitely generated closed cone
+\[
+ K=\{(Au,\mathbf1^{\mathsf T}u+t):u\geq0,\ t\geq0\}.
+\]
+For every $\varepsilon>0$, the point $(m,\beta-\varepsilon)$ is outside
+$K$.  Separating this point from $K$ gives $(y,s)$ with $s>0$,
+$A^{\mathsf T}y+s\mathbf1\geq0$, and
+$y^{\mathsf T}m+s(\beta-\varepsilon)<0$.  The vector
+$c=-y/s$ is dual feasible and satisfies
+$c^{\mathsf T}m>\beta-\varepsilon$.  Hence the dual supremum is $\beta$;
+the standard finite-polyhedron attainment argument gives a maximizer.
+
+It remains to justify the optimality claim.  Let $u$ be any feasible
+vector in (2.3).  Make one atom $\omega_\sigma$ for every nonempty
+signature, together with one dummy atom, give all these atoms equal
+positive probability, put $\omega_\sigma\in E_i$ exactly when
+$i\in\sigma$, and choose the value of $X(\omega_\sigma)$ so that its
+expected mass is $u_\sigma$; put $X=0$ at the dummy atom.  This realizes
+the prescribed moment vector and has
+$\E[X]=\sum_\sigma u_\sigma$.  In particular, an optimizer in (2.3) is
+realized by a finite event system.  No universally valid function of the
+listed moments can therefore give a larger lower bound.
+\end{proof}
+
+Adding moments can only shrink the feasible set in (2.3).  Thus the bounds
+are monotone under enrichment of $\cM$.  If all nonempty subsets of $I$ are
+included, M\"obius inversion determines every $z_\sigma$, and
+\[
+ \boxed{
+ \cB_{\cP(I)\setminus\{\varnothing\}}(m)
+ =\sum_{\varnothing\ne S\subseteq I}(-1)^{|S|+1}m_S
+ =\E[X].}
+ \tag{2.6}
+\]
+This is finite inclusion--exclusion, now identified as the terminal point
+of an information-optimal hierarchy.
+
+\subsection{Using bounded observables}
+
+When $0\leq X\leq1$, one can retain the gate-signature probabilities
+\[
+ h_\sigma=\Pp(\sigma(\omega)=\sigma).
+\]
+Then $0\leq z_\sigma\leq h_\sigma$.  Define the capped program
+\[
+ \cB^{\mathrm{cap}}_{\cM}(m,h)=
+ \min\left\{
+  \sum_\sigma u_\sigma:Au=m,\ 0\leq u_\sigma\leq h_\sigma
+ \right\}.
+ \tag{2.7}
+\]
+
+\begin{proposition}[Capped dual]\label{prop:capped}
+If $0\leq X\leq1$ and $X=0$ off $D$, then
+\[
+ \E[X]\geq\cB^{\mathrm{cap}}_{\cM}(m,h)
+ \geq\cB_{\cM}(m),
+ \tag{2.8}
+\]
+and
+\[
+ \boxed{
+ \cB^{\mathrm{cap}}_{\cM}(m,h)
+ =\max_{c\in\mathbb R^{\cM}}
+ \left\{
+ c^{\mathsf T}m-
+ \sum_{\sigma\ne\varnothing}h_\sigma
+ \bigl((A^{\mathsf T}c)_\sigma-1\bigr)_+
+ \right\}.}
+ \tag{2.9}
+\]
+This is the best universal lower bound determined by $(m,h)$.
+\end{proposition}
+
+\begin{proof}
+The actual $z$ is feasible in (2.7), and the capped feasible set is
+contained in the uncapped one.  For a multiplier $c$ for $Au=m$, minimizing
+the Lagrangian over the box $0\leq u\leq h$ gives
+\[
+ c^{\mathsf T}m+
+ \sum_\sigma\min_{0\leq u_\sigma\leq h_\sigma}
+ \bigl(1-(A^{\mathsf T}c)_\sigma\bigr)u_\sigma,
+\]
+which is the expression in (2.9).  Finite linear-programming duality gives
+equality.  Conversely, every vector $0\leq u\leq h$ can be realized on a
+space with signature masses $h_\sigma$ by setting
+$X=u_\sigma/h_\sigma$ on the $\sigma$-atom (and setting it to zero when
+$h_\sigma=0$).  This proves optimality.
+\end{proof}
+
+\section{Comparison with the Christoffel bound}
+
+\begin{theorem}[The Boolean program dominates the Gram program]
+Let $\mathcal F$ be a family of nonempty subsets of $I$, and suppose
+$\cM$ contains every set $S\cup T$ with $S,T\in\mathcal F$.  Form
+\[
+ m^{\mathcal F}_S=m_S,
+ \qquad M^{\mathcal F}_{S,T}=m_{S\cup T}.
+\]
+Then
+\[
+ \boxed{
+ \cB_{\cM}(m)\geq
+ \sup_{c^{\mathsf T}M^{\mathcal F}c>0}
+ \frac{(c^{\mathsf T}m^{\mathcal F})^2}
+      {c^{\mathsf T}M^{\mathcal F}c}.}
+ \tag{3.1}
+\]
+The inequality can be strict.
+\end{theorem}
+
+\begin{proof}
+Take any feasible signature vector $u$ in (2.3), and regard $u$ as a
+finite measure on the nonempty signatures.  On this space let
+$J_S(\sigma)=\one_{\{S\subseteq\sigma\}}$.  Its listed first and second
+moments are exactly $m^{\mathcal F}$ and $M^{\mathcal F}$.  Applying
+Cauchy--Schwarz under this measure shows
+\[
+ \sum_\sigma u_\sigma\geq
+ \frac{(c^{\mathsf T}m^{\mathcal F})^2}
+      {c^{\mathsf T}M^{\mathcal F}c}
+\]
+for every admissible $c$.  Minimize the left side over feasible $u$ and
+then maximize the right side over $c$.  Strictness follows from the
+two-event calculation (1.2)--(1.3).
+\end{proof}
+
+For the four-cycle data quoted in the preceding draft,
+\[
+ a=d=\frac{325}{398},\qquad c=\frac{625}{796}.
+\]
+The Gram value is
+\[
+ \frac{8450}{10149}\approx0.832594,
+\]
+whereas the Boolean program, using exactly the same three moments, gives
+\[
+ a+d-c=\frac{675}{796}\approx0.847990.
+\]
+Thus it recovers the exact answer one full level earlier than the proposed
+Gram hierarchy.
+
+\section{The sharp gate-count hierarchy}
+
+The full signature program distinguishes the gates.  A much smaller
+program results if only permutation-invariant moment sums are retained.
+Let $n=|I|$ and
+\[
+ N=\sum_{i\in I}\one_{E_i}.
+\]
+On the support of $X$, one has $1\leq N\leq n$.  Define the factorial
+moments
+\[
+ S_j=\E\left[X\binom Nj\right]
+ =\sum_{\substack{T\subseteq I\\|T|=j}}m_T,
+ \qquad 1\leq j\leq n.
+ \tag{4.1}
+\]
+For $1\leq d\leq n$, put
+\[
+ \cD_d(S)=
+ \min\left\{
+  \sum_{k=1}^n u_k:
+  u_k\geq0,\quad
+  \sum_{k=1}^n\binom kj u_k=S_j\ (1\leq j\leq d)
+ \right\}.
+ \tag{4.2}
+\]
+
+\begin{theorem}[Sharp factorial-moment completion]\label{thm:count}
+For every $d$,
+\[
+ \boxed{\E[X]\geq\cD_d(S),}
+ \tag{4.3}
+\]
+where
+\[
+ \boxed{
+ \cD_d(S)=
+ \max\left\{
+  \sum_{j=1}^d a_jS_j:
+  \sum_{j=1}^d a_j\binom kj\leq1
+  \text{ for }k=1,\ldots,n
+ \right\}.}
+ \tag{4.4}
+\]
+This is the best bound based only on $S_1,\ldots,S_d$.  The sequence is
+nondecreasing in $d$, and
+\[
+ \boxed{\cD_n(S)=\E[X].}
+ \tag{4.5}
+\]
+\end{theorem}
+
+\begin{proof}
+Put
+\[
+ u_k=\E[X;N=k].
+\]
+These nonnegative numbers are feasible in (4.2), their total is $\E[X]$,
+and (4.4) is the finite LP dual.  Every feasible $(u_k)$ is realized by a
+finite event system supported on signatures of the indicated sizes, so the
+bound is information-optimal.  Enriching the moment list shrinks the
+primal feasible set.  Finally,
+\[
+ \sum_{j=1}^n(-1)^{j+1}\binom kj=1
+ \qquad(1\leq k\leq n).
+\]
+Using these coefficients in (4.4) gives $\E[X]$, proving (4.5).
+\end{proof}
+
+The order-two program has a closed form.  This is the classical sharp
+Dawson--Sankoff lower bound.
+
+\begin{theorem}[Sharp order-two formula]\label{thm:DS}
+Assume $S_1>0$ and put
+\[
+ x=1+\frac{2S_2}{S_1},\qquad r=\lfloor x\rfloor.
+ \tag{4.6}
+\]
+Then $1\leq r\leq n$ and
+\[
+ \boxed{
+ \cD_2(S)=
+ \frac{2S_1}{r+1}-\frac{2S_2}{r(r+1)}.}
+ \tag{4.7}
+\]
+If $S_1=0$, then $X=0$ almost surely and all quantities vanish.  The bound
+(4.7) dominates the Cauchy--Schwarz estimate
+\[
+ \frac{S_1^2}{S_1+2S_2},
+ \tag{4.8}
+\]
+and their difference is
+\[
+ \boxed{
+ \frac{S_1(x-r)(r+1-x)}{xr(r+1)}\geq0.}
+ \tag{4.9}
+\]
+It is strict unless $x$ is an integer.
+\end{theorem}
+
+\begin{proof}
+For every integer $k\geq1$ and every positive integer $r$,
+\[
+ 1-\left(\frac{2k}{r+1}
+ -\frac{2\binom{k}{2}}{r(r+1)}\right)
+ =\frac{(k-r)(k-r-1)}{r(r+1)}\geq0.
+ \tag{4.10}
+\]
+The last inequality holds because no integer lies strictly between $r$ and
+$r+1$.  Multiplying (4.10) by $u_k$ and summing proves that the right side
+of (4.7) is a valid dual bound.
+
+To prove optimality, let $\eta=x-r$.  Since $x$ is the mean of $k$ under
+the probability weights $ku_k/S_1$, one has $1\leq x\leq n$ and
+$0\leq\eta<1$, except that $x=n$ simply gives $\eta=0$ and $r=n$.
+Define
+\[
+ u_r=\frac{S_1(1-\eta)}r,
+ \qquad
+ u_{r+1}=\frac{S_1\eta}{r+1},
+ \tag{4.11}
+\]
+with the second term omitted when $r=n$, and set all other $u_k$ to zero.
+Then
+\[
+ \sum k u_k=S_1,
+ \qquad
+ \sum\binom{k}{2}u_k=S_2.
+\]
+Its total mass is exactly the right side of (4.7), so the primal and dual
+values agree.  Since $S_1+2S_2=xS_1$, direct subtraction of (4.8) from
+(4.7) gives (4.9).
+\end{proof}
+
+When $n=2$, write $a=m_{\{1\}}$, $d=m_{\{2\}}$, and
+$c=m_{\{1,2\}}$.  Then $S_1=a+d$ and $S_2=c$; Theorem~\ref{thm:DS}
+gives $a+d-c=\E[X]$.  Thus the order-two integer constraint closes exactly
+the deficit (1.3) left by the continuous Cauchy--Schwarz relaxation.
+
+\section{Application to the random-cluster model}
+
+Let $G=(V,E)$ be a finite loopless multigraph with edge parameters
+$p_e\in[0,1]$ and cluster weight $q>0$.  Its random-cluster law is
+\[
+ \RC_{G,p,q}(\omega)=\frac1{Z_{G,p,q}}
+ q^{k_G(\omega)}
+ \prod_{e\in\omega}p_e
+ \prod_{e\notin\omega}(1-p_e).
+ \tag{5.1}
+\]
+No correlation assumption and no restriction on $q$ is needed below.
+
+Fix nonempty vertex sets $R,A\subseteq V$, and let
+\[
+ C_R=\bigcup_{r\in R}C_r,
+ \qquad D=\{R\leftrightarrow A\}.
+\]
+For each $a\in A$, take the single gate event
+\[
+ E_a=\{R\leftrightarrow a\}.
+ \tag{5.2}
+\]
+Then $D=\bigcup_{a\in A}E_a$.  In particular, only $|A|$ Boolean gates
+are required; indexing instead by $R\times A$ is unnecessary.
+
+Let $F:2^V\to\mathbb R$ be arbitrary and put
+\[
+ m_F=\min_{K\subseteq V}F(K),\qquad
+ X_F=(F(C_R)-m_F)\one_D.
+ \tag{5.3}
+\]
+For nonempty $S\subseteq A$, define
+\[
+ m_S(F)=\RC\left[F(C_R)-m_F;
+ R\leftrightarrow a\text{ for every }a\in S\right].
+ \tag{5.4}
+\]
+
+\begin{theorem}[Sharp random-cluster gate completion]\label{thm:RC}
+For every $q>0$, every moment family $\cM$, and every real function $F$,
+\[
+ \boxed{
+ \RC[F(C_R);D]-m_F\RC(D)
+ \geq \cB_{\cM}\bigl((m_S(F))_{S\in\cM}\bigr).}
+ \tag{5.5}
+\]
+The capped version of Proposition~\ref{prop:capped} applies whenever
+$0\leq F(C_R)-m_F\leq1$.  The factorial-moment bounds of
+Theorems~\ref{thm:count} and~\ref{thm:DS} apply after summing (5.4) over
+sets of equal size.  With every nonempty $S\subseteq A$ retained, (5.5) is
+an equality after finitely many levels.
+\end{theorem}
+
+\begin{proof}
+Apply Theorem~\ref{thm:signature} to the finite edge-configuration space,
+the events (5.2), and the nonnegative variable (5.3).  Equation (5.4) is
+exactly the corresponding intersection moment.  The remaining assertions
+follow from Proposition~\ref{prop:capped} and
+Theorems~\ref{thm:count}--\ref{thm:DS}.
+\end{proof}
+
+For a target vertex $b$, take $F(K)=\one_{\{b\in K\}}$.  Then
+\[
+ \alpha_b=\RC(R\leftrightarrow b,\ R\leftrightarrow A)
+\]
+and
+\[
+ p_S(b)=\RC(R\leftrightarrow b,\ R\leftrightarrow a
+              \text{ for every }a\in S).
+ \tag{5.6}
+\]
+Consequently,
+\[
+ \boxed{\alpha_b\geq\cB_{\cM}\bigl((p_S(b))_{S\in\cM}\bigr).}
+ \tag{5.7}
+\]
+This bound is valid for $q<1$, $q=1$, and $q>1$.  For a single source
+$R=\{o\}$, the moment in (5.4) is gate-readable: on the event in (5.4),
+$C_a=C_o$ for every $a\in S$.
+
+\section{Order-free Tutte certificates}
+
+The random-cluster specialization has a further algebraic structure.  Use
+the exact cluster-law reduction: delete edges with $p_e=0$, contract the
+components formed by edges with $p_e=1$, delete loops, and replace a
+parallel class $B$ by one edge of parameter
+\[
+ 1-\prod_{e\in B}(1-p_e).
+\]
+It is therefore enough to consider a simple graph with $0<p_e<1$.
+Put
+\[
+ v_e=\frac{p_e}{1-p_e}.
+\]
+For a nonempty vertex set $B$, define
+\[
+ \kappa(B)=
+ \sum_{\substack{T\subseteq E(B)\\(B,T)\text{ connected}}}
+ \prod_{e\in T}v_e,
+ \tag{6.1}
+\]
+with $\kappa(\{v\})=1$.  For a partition $\pi$ of $V$, put
+\[
+ w(\pi)=\prod_{B\in\pi}\kappa(B),
+ \qquad
+ \cZ(q)=\sum_\pi q^{|\pi|}w(\pi).
+ \tag{6.2}
+\]
+The open-component partition $\Pi$ then satisfies
+\[
+ \RC(\Pi=\pi)=\frac{q^{|\pi|}w(\pi)}{\cZ(q)}.
+ \tag{6.3}
+\]
+Indeed, after the global factor $\prod_e(1-p_e)$ is removed, a
+configuration with component partition $\pi$ is exactly an independent
+choice of a connected spanning edge set inside every block of $\pi$.
+
+For a partition $\pi$, let
+\[
+ B_R(\pi)=\bigcup\{B\in\pi:B\cap R\ne\varnothing\},
+ \qquad
+ \sigma_R(\pi)=A\cap B_R(\pi).
+\]
+For every nonempty $\sigma\subseteq A$, define the atom polynomial
+\[
+ W^b_\sigma(q)=
+ \sum_{\substack{\pi:\ b\in B_R(\pi)\\
+                         \sigma_R(\pi)=\sigma}}
+ q^{|\pi|}w(\pi),
+ \tag{6.4}
+\]
+and the gate-only atom polynomial
+\[
+ H_\sigma(q)=
+ \sum_{\substack{\pi:\sigma_R(\pi)=\sigma}}
+ q^{|\pi|}w(\pi).
+ \tag{6.5}
+\]
+All their coefficients are nonnegative, and coefficientwise
+$0\leq W^b_\sigma\leq H_\sigma$.  Put
+\[
+ L_b(q)=\sum_{\sigma\ne\varnothing}W^b_\sigma(q),
+ \qquad
+ P^b_S(q)=\sum_{\sigma\supseteq S}W^b_\sigma(q).
+ \tag{6.6}
+\]
+Then
+\[
+ \alpha_b=\frac{L_b(q)}{\cZ(q)},
+ \qquad
+ p_S(b)=\frac{P^b_S(q)}{\cZ(q)}.
+\]
+
+\begin{theorem}[Coefficientwise Boolean--Tutte certificate]
+Suppose $(c_S)_{S\in\cM}$ satisfies
+\[
+ a_\sigma:=
+ \sum_{\substack{S\in\cM\\S\subseteq\sigma}}c_S\leq1
+ \qquad(\varnothing\ne\sigma\subseteq A).
+ \tag{6.7}
+\]
+Then
+\[
+ \boxed{
+ L_b(q)-\sum_{S\in\cM}c_SP^b_S(q)
+ =\sum_{\sigma\ne\varnothing}(1-a_\sigma)W^b_\sigma(q),}
+ \tag{6.8}
+\]
+so the polynomial on the left has nonnegative coefficients.  In
+particular, after division by $\cZ(q)$, the corresponding random-cluster
+inequality holds simultaneously for every $q>0$.
+
+More generally, for arbitrary $c$ put $u_\sigma=(a_\sigma-1)_+$.  Then
+\[
+ \boxed{
+ L_b(q)\geq
+ \sum_{S\in\cM}c_SP^b_S(q)
+ -\sum_{\sigma\ne\varnothing}u_\sigma H_\sigma(q),}
+ \tag{6.9}
+\]
+and the difference is again coefficientwise nonnegative.
+\end{theorem}
+
+\begin{proof}
+Expand the right side of (6.8) using (6.6) and collect the coefficient of
+each atom polynomial $W^b_\sigma$.  Condition (6.7) makes every multiplier
+nonnegative.
+
+For (6.9), the contribution of a fixed signature to the difference between
+the left and right sides is
+\[
+ (1-a_\sigma)W^b_\sigma+u_\sigma H_\sigma.
+\]
+If $a_\sigma\leq1$, this is nonnegative.  If $a_\sigma>1$, it equals
+\[
+ (a_\sigma-1)(H_\sigma-W^b_\sigma),
+\]
+which is coefficientwise nonnegative.  Summing over signatures proves the
+claim.
+\end{proof}
+
+This is stronger than pointwise positive semidefiniteness of the former
+Christoffel--Tutte matrix in two ways: it is optimal for the chosen Boolean
+moment data, and every fixed dual witness proves an identity with visibly
+nonnegative coefficients rather than merely a nonnegative value at one
+$q$.
+
+\section{What this does not prove on transitive graphs}
+
+The statement
+\[
+ \theta_G(p_c(G))=0
+ \quad\text{for every infinite vertex-transitive graph }G
+ \tag{7.1}
+\]
+is false without a qualification.  For nearest-neighbour bond percolation
+on $\mathbb Z$, one has $p_c=1$ and $\theta(1)=1$.  The intended statement
+is the conjecture obtained by adding $p_c(G)<1$.
+
+The Hutchcroft/Kruskal notes supplied with the question do not prove that
+corrected statement.  Their final displayed nested anti-congestion limit is
+an additional theorem-sized hypothesis.  Calling it a consequence of
+transitivity would be circular unless it is proved.
+
+There is a second logical separation.  Theorems~\ref{thm:signature} and
+\ref{thm:RC} optimally convert known finite intersection moments into a
+union estimate.  They do not bound those intersection moments.  In the
+replica construction, the missing first-reconvergence estimate is exactly
+a bound on such overlaps.  An information-optimal union inequality cannot
+create an overlap estimate that has not been supplied.
+
+The order-two theorem does sharpen the bookkeeping in the proposed
+low-congestion/high-congestion dichotomy.  If $N$ counts any finite family
+of replica reconvergence events and
+\[
+ S_1=\E N,\qquad S_2=\E\binom N2,
+\]
+then Theorem~\ref{thm:DS} is the exact smallest possible value of
+$\Pp(N>0)$ compatible with these two factorial moments.  Equivalently, for
+every positive integer $r$,
+\[
+ \Pp(N>0)\geq
+ \frac{2S_1}{r+1}-\frac{2S_2}{r(r+1)}.
+ \tag{7.2}
+\]
+Thus a large first-reconvergence charge either forces a large union or a
+quantitatively large pair-overlap charge.  What remains absent is a theorem
+turning the latter charge, uniformly over scales, into percolation below
+$p$.  The bundle-canopy example in the supplied notes shows that
+unimodularity, finite mean degree, and critical survival alone do not give
+that conversion.
+
+Accordingly, the strongest rigorous conclusion is:
+\begin{itemize}[leftmargin=2em]
+\item the finite random-cluster hierarchy is completely strengthened by
+      the sharp Boolean and capped programs above;
+\item the permutation-invariant order-two relaxation has the closed sharp
+      formula (4.7), and the full finite hierarchy is exact;
+\item the component-partition expansion promotes every dual witness to a
+      coefficientwise Tutte-polynomial inequality for all $q>0$;
+\item no unconditional extension to all transitive graphs follows until
+      the stated anti-congestion or an equivalent robustness theorem is
+      proved.
+\end{itemize}
+
+\end{document}

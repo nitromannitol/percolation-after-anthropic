@@ -1,0 +1,17 @@
+KNAll.Site.site_no_percolation_at_critical : ∀ (d : ℕ), 3 ≤ d → KNAll.Site.thetaSite d (KNAll.Site.criticalProbSiteI d) = 0
+  axioms: propext, Classical.choice, Quot.sound
+  d: ℕ [nat_parameter]
+  hd: 3 ≤ d [numeric_side_condition]
+KNAll.Site.site_no_percolation_at_critical_primitive : ∀ (d : ℕ),
+  3 ≤ d →
+    (Percolation.Literature.LatticeModels.prodBernoulli fun x => KNAll.Site.criticalProbSiteI d).real
+        {ω |
+          {y |
+              0 ∈ ω ∧
+                (SimpleGraph.fromRel fun x y => (SimpleGraph.hasse (Fin d → ℤ)).Adj x y ∧ x ∈ ω ∧ y ∈ ω).Reachable 0
+                  y}.Infinite} =
+      0
+  axioms: propext, Classical.choice, Quot.sound
+  d: ℕ [nat_parameter]
+  hd: 3 ≤ d [numeric_side_condition]
+UNCONDITIONAL: no substantive hypothesis, no extra axiom.

@@ -1,0 +1,5 @@
+Dawson-Sankoff instances: 21840
+two-gate instances: 343
+Mobius moment entries: 57
+dual atom identities: 57
+total exact checks: 22297

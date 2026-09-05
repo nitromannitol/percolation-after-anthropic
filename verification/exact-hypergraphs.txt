@@ -1,0 +1,2 @@
+Exhaustive four-vertex hypergraphs: 2048 states: 177147 strong gluing inequalities: 491520
+Nonuniform five-vertex labelled models: 100; strong gluing, first-contact and fixed-minimizer checks passed

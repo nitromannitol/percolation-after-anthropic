@@ -1,0 +1,11 @@
+test_cli_compiles_and_cleans_up (test_acceptance.AcceptanceTests) ... ok
+test_closed_theorems_pass (test_acceptance.AcceptanceTests) ... ok
+test_extra_axiom_is_rejected (test_acceptance.AcceptanceTests) ... ok
+test_hidden_assumptions_are_rejected (test_acceptance.AcceptanceTests) ... ok
+test_missing_or_duplicate_reports_are_rejected (test_acceptance.AcceptanceTests) ... ok
+test_mixed_batch_is_rejected (test_acceptance.AcceptanceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 6.214s
+
+OK

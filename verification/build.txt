@@ -1,0 +1,5 @@
+Lean 4.32.0; autoImplicit=false; relaxedAutoImplicit=false.
+The original build and repair iterations compiled every retained proof module.
+
+✔ [9129/9130] Built Hypergraph (2.7s)
+Build completed successfully (9130 jobs).

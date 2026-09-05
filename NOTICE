@@ -1,0 +1,22 @@
+Percolation after Anthropic
+
+This repository contains the subsequent KN, hypergraph, and site development,
+produced with ChatGPT and Claude, prompted by Ahmed Bou-Rabee. The original
+bond development is a pinned dependency. Its upstream notice is retained below.
+
+--- Upstream attribution ---
+
+PercolationContinuity -- Lean 4 / Mathlib formalisation of theta(p_c) = 0 for bond percolation on Z^d, d >= 2
+(https://github.com/anthropic-experimental/percolation)
+Copyright 2026 Anthropic, PBC
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Responsible maintainer: Justin Leder. The formalization was produced by Claude (Anthropic), an AI system,
+working autonomously under his direction. See README.md, "Provenance and review status".
+
+This product depends on, but does not include, Lean 4 (https://github.com/leanprover/lean4) and
+mathlib4 with its standard dependency set -- fetched by the build tool from their public repositories at the
+revisions pinned in lake-manifest.json: batteries, aesop, Qq, ProofWidgets4, import-graph, LeanSearchClient and
+plausible are released under the Apache License, Version 2.0; Cli (leanprover/lean4-cli) is released under the
+MIT License (Copyright (c) 2021 Marc Huisinga). None of these dependencies is included in this repository.
