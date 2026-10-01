@@ -1,0 +1,87 @@
+version: v0.4
+project:
+  name: percolation-after-anthropic
+  description: Lean 4/Mathlib proofs of the Kozma-Nitzan connection inequalities for Bernoulli bond percolation
+    on Z^d and their extension to independent hyperedges (hypergraph percolation) and to site percolation,
+    building on the bond-percolation proof of Anthropic. The development includes affirmative answers
+    to several Kozma-Nitzan questions and a counterexample to the every-minimizer reading of Question
+    8.
+  authors:
+  - Ahmed Bou-Rabee
+  - Justin Leder
+  responsible_maintainers:
+  - Justin Leder
+  license: Apache-2.0
+classification:
+  arxiv:
+  - math.PR
+  - math.CO
+  msc2020:
+  - 60K35
+  - 82B43
+sources:
+- title: Kozma-Nitzan connection inequalities, hypergraph extension and site percolation (this formalization)
+  type: original-proof
+  relationship: other
+  note: 'The hypergraph and site-percolation extension and the counterexample to the every-minimizer reading
+    of Question 8 are first presented by this formalization (2026). TODO(author): record the accompanying
+    write-up and its identifier.'
+  author_endorsement: n/a
+- title: A reduction of the theta(p_c)=0 problem to a conjectured inequality
+  authors:
+  - Gady Kozma
+  - Shahaf Nitzan
+  id: arXiv:2401.12397
+  type: paper
+  year: 2024
+  relationship: background
+  note: Source of the numbered conjectures and questions that the development answers; the statements
+    are transcribed in KNConjectures/.
+  author_endorsement: not-contacted
+- title: bond-percolation proof, anthropics/formal-math (percolation), commit 795efb86
+  authors:
+  - Anthropic, PBC
+  id: https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation
+  type: software
+  relationship: other
+  license: Apache-2.0
+  note: ''
+  author_endorsement: participated
+automation:
+  methods:
+  - method: agent
+    models:
+    - Claude
+    - ChatGPT
+  spend_usd: TODO(author)
+status:
+  scope: The finite bond results (Kozma-Nitzan Conjectures 1-4 and 6, including the strong joint-event
+    and fixed-minimizer forms), answers to Questions 5, 7 and 9, a counterexample to the every-minimizer
+    reading of Question 8, and the extension to independent hyperedges and site percolation. VERIFICATION.md
+    records the review and reproducible checks.
+  sorry_count: 0
+  axioms:
+  - propext
+  - Classical.choice
+  - Quot.sound
+  main_results:
+  - declaration: 'TODO(author): record the headline declaration(s)'
+    file: KNConjectures/
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    comparator_config: 'TODO(author): add Audit/<Main>/comparator.json'
+fidelity:
+  divergences: VERIFICATION.md records the review, corrections and reproducible checks; the every-minimizer
+    tie is recorded as a genuine divergence.
+review:
+  status: in-progress
+  reviewers:
+  - Justin Leder
+  - Ahmed Bou-Rabee
+  notes: Review, corrections and reproducible checks are recorded in VERIFICATION.md. Not external peer
+    review.
+acknowledgements: Built on the Anthropic bond-percolation proof and its literature library; thanks to
+  the Anthropic formal-math team.

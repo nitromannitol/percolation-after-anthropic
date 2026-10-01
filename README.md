@@ -53,8 +53,11 @@ python3 Hypergraph/boolean-tutte/verify.py
 
 `Audit.lean` prints the principal statements and their axioms. The acceptance checker inspects Lean's elaborated declarations, including implicit and instance binders; it permits natural-number parameters and numeric lower bounds, and rejects other assumptions or nonstandard axioms. It checks that narrow property, not whether a mathematical definition expresses the intended model. The exact enumerations are additional finite checks, not proofs of the general results.
 
-## Source and attribution
-
-The original bond proof and its literature library were produced by Claude under Justin Leder's direction at Anthropic. The subsequent KN, hypergraph, and site development was produced with ChatGPT and Claude, prompted by Ahmed Bou-Rabee. Original theorem namespaces are retained; `source-layout.json` maps the previous module paths to the current organization. Obsolete scaffolding and superseded experiments have been removed.
+Original theorem namespaces are retained; `source-layout.json` maps the previous module paths to the current organization. Obsolete scaffolding and superseded experiments have been removed.
 
 Licensed under [Apache 2.0](LICENSE); see [NOTICE](NOTICE) for upstream attribution.
+
+
+## How this was built
+
+The Lean code was written by Claude, ChatGPT under the close supervision of the author; models, tooling and cost are disclosed in `formalization.yaml`.
