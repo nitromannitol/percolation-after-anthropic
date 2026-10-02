@@ -148,7 +148,8 @@ Theorem namespaces follow the numbering of the sources (`KNAll`, `KNAll.Guarded`
 
 ## How this was built
 
-The Lean code was written mostly by Claude, with contributions by ChatGPT, under the close supervision of the authors; models, tooling, cost and review status are disclosed in [`formalization.yaml`](formalization.yaml), following the [mathlib-initiative](https://github.com/mathlib-initiative/formalization.yaml) standard.
+The Lean code of this repository was written by ChatGPT and Claude under the close
+supervision of Ahmed Bou-Rabee; models, tooling, cost and review status are disclosed in [`formalization.yaml`](formalization.yaml), following the [mathlib-initiative](https://github.com/mathlib-initiative/formalization.yaml) standard.
 
 ## Authors, citation, acknowledgements
 
