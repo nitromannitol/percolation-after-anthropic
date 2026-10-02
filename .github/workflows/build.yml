@@ -1,0 +1,129 @@
+name: CI
+
+# Builds the project and the Mathlib-only comparator surface on GitHub-hosted runners
+# (`ubuntu-latest`), then audits the principal declarations.  No `pull_request` trigger: the
+# cached `.lake` trees are the artifacts every later gate trusts.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build, sorry gate, axiom audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Reclaim runner disk space
+        shell: bash
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc \
+                      /usr/local/.ghcup /usr/local/share/powershell \
+                      /usr/share/swift /usr/local/share/boost || true
+          df -h /
+
+      # The pinned commit of the bond-percolation dependency is not necessarily reachable from
+      # the upstream default branch, so it is fetched explicitly (as `scripts/bootstrap.sh`
+      # does) before Lake resolves the package and its subdirectory.
+      - name: Fetch the pinned bond-percolation dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r url revision < <(python3 - <<'PY'
+          import json
+          m = json.load(open("lake-manifest.json"))
+          p = next(p for p in m["packages"] if p["name"] == "PercolationContinuity")
+          print(p["url"], p["rev"])
+          PY
+          )
+          package_dir=.lake/packages/PercolationContinuity
+          mkdir -p "$package_dir"
+          [ -e "$package_dir/.git" ] || {
+            git -C "$package_dir" init -q
+            git -C "$package_dir" remote add origin "$url"
+          }
+          git -C "$package_dir" cat-file -e "$revision^{commit}" 2>/dev/null \
+            || git -C "$package_dir" fetch origin "$revision"
+          git -C "$package_dir" checkout --detach "$revision"
+
+      - name: Set up Lean and fetch the Mathlib cache
+        uses: leanprover/lean-action@v1
+        with:
+          build: false
+          use-mathlib-cache: true
+
+      - name: Restore project build artifacts
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .lake/build
+            .lake/packages/PercolationContinuity/percolation/.lake/build
+          key: lake-proj-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: |
+            lake-proj-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
+      - name: Build the library (sorry gate)
+        shell: bash
+        run: |
+          set -o pipefail
+          lake build 2>&1 | tee production-build.log
+          if grep -iE "declaration uses .sorry" production-build.log; then
+            echo "The production build uses sorry."
+            exit 1
+          fi
+
+      - name: Build the Mathlib-only comparator surface
+        run: lake build PercolationAudit
+
+      - name: Check the challenge vocabulary is Mathlib-only and self-consistent
+        run: |
+          bash PercolationAudit/check_standalone.sh --vocabulary
+
+      - name: Axiom audit
+        shell: bash
+        run: |
+          set -o pipefail
+          lake env lean scripts/Audit.lean 2>&1 | tee axiom-audit.log
+          python3 - <<'PY'
+          import re, sys
+          log = " ".join(open("axiom-audit.log").read().split())
+          if "sorryAx" in log:
+              sys.exit("sorryAx appears in the axiom audit")
+          reports = re.findall(r"depends on axioms: \[([^\]]*)\]", log)
+          if not reports:
+              sys.exit("no axiom report found")
+          allowed = {"propext", "Classical.choice", "Quot.sound"}
+          extra = {a.strip() for r in reports for a in r.split(",")} - allowed
+          if extra:
+              sys.exit("nonstandard axioms: " + ", ".join(sorted(extra)))
+          print(len(reports), "declarations depend only on", ", ".join(sorted(allowed)))
+          PY
+
+      - name: Structural acceptance check of the principal declarations
+        run: |
+          python3 scripts/acceptance.py . \
+            Hypergraph.FinalCriticality:KNAll.Site.site_no_percolation_at_critical \
+            Hypergraph.FinalCriticality:KNAll.Site.site_no_percolation_at_critical_primitive
+
+      - name: Acceptance regression tests and exact finite checks
+        run: |
+          python3 -m unittest discover -s tests -v
+          python3 tests/exact_hypergraph_checks.py
+          python3 Hypergraph/boolean-tutte/verify.py
+
+      - name: Save project build artifacts
+        if: always() && steps.cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .lake/build
+            .lake/packages/PercolationContinuity/percolation/.lake/build
+          key: lake-proj-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}

@@ -1,11 +1,13 @@
-version: v0.4
+version: "v0.4"
 project:
   name: percolation-after-anthropic
   description: Lean 4/Mathlib proofs of the Kozma-Nitzan connection inequalities for Bernoulli bond percolation
     on Z^d and their extension to independent hyperedges (hypergraph percolation) and to site percolation,
     building on the bond-percolation proof of Anthropic. The development includes affirmative answers
     to several Kozma-Nitzan questions and a counterexample to the every-minimizer reading of Question
-    8.
+    8. Its headline theorem is that nearest-neighbour Bernoulli site percolation on Z^d, d >= 3, has no
+    infinite open cluster at its critical parameter, and it is independently checked by the comparator
+    pair under PercolationAudit/SiteCriticality/.
   authors:
   - Ahmed Bou-Rabee
   - Justin Leder
@@ -24,8 +26,8 @@ sources:
   type: original-proof
   relationship: other
   note: 'The hypergraph and site-percolation extension and the counterexample to the every-minimizer reading
-    of Question 8 are first presented by this formalization (2026). TODO(author): record the accompanying
-    write-up and its identifier.'
+    of Question 8 are first presented by this formalization. The Kozma-Nitzan results are written up in
+    docs/kn-results.tex. TODO(author): record the identifier of an accompanying write-up of the extension.'
   author_endorsement: n/a
 - title: A reduction of the theta(p_c)=0 problem to a conjectured inequality
   authors:
@@ -57,31 +59,123 @@ automation:
 status:
   scope: The finite bond results (Kozma-Nitzan Conjectures 1-4 and 6, including the strong joint-event
     and fixed-minimizer forms), answers to Questions 5, 7 and 9, a counterexample to the every-minimizer
-    reading of Question 8, and the extension to independent hyperedges and site percolation. VERIFICATION.md
+    reading of Question 8, and the extension to independent hyperedges and site percolation, whose headline
+    theorem is KNAll.Site.site_no_percolation_at_critical (theta_site(p_c) = 0 on Z^d, d >= 3). A Mathlib-only
+    comparator challenge for that theorem is provided under PercolationAudit/SiteCriticality/. VERIFICATION.md
     records the review and reproducible checks.
   sorry_count: 0
+  sorry_count_scope: KNConjectures and Hypergraph libraries only
+  comparator_challenge_sorry_count: 1
+  sorry_in_definitions: 0
   axioms:
   - propext
   - Classical.choice
   - Quot.sound
   main_results:
-  - declaration: 'TODO(author): record the headline declaration(s)'
-    file: KNConjectures/
+  - declaration: KNAll.Site.site_no_percolation_at_critical
+    file: Hypergraph/FinalCriticality.lean
     sorry_count: 0
     axioms:
     - propext
     - Classical.choice
     - Quot.sound
-    comparator_config: 'TODO(author): add Audit/<Main>/comparator.json'
+    comparator_config: PercolationAudit/SiteCriticality/comparator.json
+    literature_dependencies: []
+  - declaration: KNAll.Site.FiniteHyperGluingClosed.hyperedgeGluing
+    file: Hypergraph/FiniteHyperGluingClosed.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    literature_dependencies: []
+  - declaration: KNAll.conjecture1_holds
+    file: KNConjectures/Conjectures.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    literature_dependencies: []
+  - declaration: KNAll.conjecture2Strong_holds
+    file: KNConjectures/Conjectures.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    literature_dependencies: []
+  - declaration: KNAll.conjecture3_holds
+    file: KNConjectures/Conjectures.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    literature_dependencies: []
+  - declaration: KNAll.conjecture4Fixed_holds
+    file: KNConjectures/Conjectures.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    literature_dependencies: []
+  - declaration: KNAll.Guarded.conjecture6_holds
+    file: KNConjectures/Conjecture6Proof.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    literature_dependencies: []
+  - declaration: KNAll.question5_holds
+    file: KNConjectures/Question5.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    literature_dependencies: []
+  - declaration: KNAll.question7_holds
+    file: KNConjectures/Conjectures.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    literature_dependencies: []
+  - declaration: KNAll.question9_holds
+    file: KNConjectures/Question9.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    literature_dependencies: []
+  - declaration: KNAll.not_question8EveryMin
+    file: KNConjectures/Question8Counterexample.lean
+    sorry_count: 0
+    axioms:
+    - propext
+    - Classical.choice
+    - Quot.sound
+    literature_dependencies: []
 fidelity:
-  divergences: VERIFICATION.md records the review, corrections and reproducible checks; the every-minimizer
-    tie is recorded as a genuine divergence.
+  divergences: Question 8 is formalized in its every-minimizer reading (Question8EveryMin in KNConjectures/Question8Defs.lean),
+    which is refuted by KNAll.not_question8EveryMin; the printed question does not say which minimizer is
+    meant when the minimum is attained more than once, and the every-minimizer tie is recorded as a genuine
+    divergence. The Lean statement of Question 5 has the right-hand side P(o <-> b) printed
+    by Kozma and Nitzan, and the sharper right-hand side P(o <-> b, o <-> A) and the positive result for
+    Question 8 when |A| <= 2 are proved in docs/kn-results.tex only. The formal Conjecture 3 quantifies over
+    the empty set A as well, and the formal Conjecture 6 also covers the degenerate pair v = w. VERIFICATION.md
+    records the review and the reproducible checks.
 review:
   status: in-progress
   reviewers:
   - Justin Leder
   - Ahmed Bou-Rabee
-  notes: Review, corrections and reproducible checks are recorded in VERIFICATION.md. Not external peer
+  notes: The review and reproducible checks are recorded in VERIFICATION.md. Not external peer
     review.
 acknowledgements: Built on the Anthropic bond-percolation proof and its literature library; thanks to
   the Anthropic formal-math team.

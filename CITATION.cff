@@ -1,0 +1,50 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite it as below."
+title: "Percolation after Anthropic: Lean 4 proofs of the Kozma-Nitzan connection inequalities and of site percolation at criticality"
+abstract: >-
+  A machine-checked Lean 4 / mathlib development of the Kozma-Nitzan connection inequalities for
+  Bernoulli percolation (Conjectures 1-4 and 6, affirmative answers to Questions 5, 7 and 9, and a
+  counterexample to the every-minimizer reading of Question 8), their extension to independent
+  hyperedges, and the theorem that nearest-neighbour Bernoulli site percolation on Z^d, d >= 3,
+  has no infinite open cluster at its critical parameter. It builds on the bond-percolation proof
+  of Anthropic, a pinned git dependency. The library contains no sorry and no custom axiom; the
+  Mathlib-only comparator challenge for the site theorem contains one intentional statement-level
+  sorry whose completed solution is checked separately.
+type: software
+authors:
+  - family-names: Bou-Rabee
+    given-names: Ahmed
+  - family-names: Leder
+    given-names: Justin
+keywords:
+  - Lean
+  - mathlib
+  - formal verification
+  - percolation
+  - site percolation
+  - critical probability
+license: Apache-2.0
+repository-code: "https://github.com/nitromannitol/percolation-after-anthropic"
+references:
+  - type: article
+    title: "A reduction of the theta(p_c)=0 problem to a conjectured inequality"
+    authors:
+      - family-names: Kozma
+        given-names: Gady
+      - family-names: Nitzan
+        given-names: Shahaf
+    year: 2024
+    url: "https://arxiv.org/abs/2401.12397"
+    identifiers:
+      - type: other
+        value: "arXiv:2401.12397"
+    notes: "The source of the numbered conjectures and questions answered by this repository."
+  - type: software
+    title: "Theta at the critical point vanishes for Bernoulli bond percolation on the hypercubic lattice in all dimensions at least two, in Lean 4 and Mathlib"
+    authors:
+      - name: "Anthropic, PBC"
+    year: 2026
+    url: "https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation"
+    license: Apache-2.0
+    commit: "795efb86f191735c5481675763537cfb4ff37e55"
+    notes: "The bond-percolation library on which this repository builds, a pinned git dependency."

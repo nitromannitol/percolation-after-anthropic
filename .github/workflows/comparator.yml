@@ -1,0 +1,181 @@
+name: Comparator audit
+
+# Runs the official leanprover/comparator on every PercolationAudit/<X> pair: for each pair it
+# checks that Solution proves a statement whose full dependency closure matches Challenge's,
+# uses only the permitted axioms, and is accepted by BOTH the Lean kernel (replay) and the
+# independent nanoda kernel.  No `pull_request` trigger.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: comparator-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  COMPARATOR_REV: "575674928e239f5bc452aab72d1dd7b0f1326494"  # leanprover/comparator
+  LEAN4EXPORT_REV: "v4.32.0"                                  # MUST match ./lean-toolchain
+  NANODA_REV: "6ae1f0cd962f081f6c423454c5da729d841236a7"      # ammkrn/nanoda_lib
+  LANDRUN_REV: "811cfff51ceaf3d9843708aa6d22e9b84ccac8b4"     # Zouuup/landrun
+
+jobs:
+  comparator:
+    name: Comparator over the audit pairs
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Reclaim runner disk space
+        shell: bash
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc \
+                      /usr/local/.ghcup /usr/local/share/powershell \
+                      /usr/share/swift /usr/local/share/boost || true
+          df -h /
+
+      # The pinned commit of the bond-percolation dependency is not necessarily reachable from
+      # the upstream default branch, so it is fetched explicitly (as `scripts/bootstrap.sh`
+      # does) before Lake resolves the package and its subdirectory.
+      - name: Fetch the pinned bond-percolation dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r url revision < <(python3 - <<'PY'
+          import json
+          m = json.load(open("lake-manifest.json"))
+          p = next(p for p in m["packages"] if p["name"] == "PercolationContinuity")
+          print(p["url"], p["rev"])
+          PY
+          )
+          package_dir=.lake/packages/PercolationContinuity
+          mkdir -p "$package_dir"
+          [ -e "$package_dir/.git" ] || {
+            git -C "$package_dir" init -q
+            git -C "$package_dir" remote add origin "$url"
+          }
+          git -C "$package_dir" cat-file -e "$revision^{commit}" 2>/dev/null \
+            || git -C "$package_dir" fetch origin "$revision"
+          git -C "$package_dir" checkout --detach "$revision"
+
+      - name: Set up Lean and fetch the Mathlib cache
+        uses: leanprover/lean-action@v1
+        with:
+          build: false
+          use-mathlib-cache: true
+
+      - name: Restore project build artifacts
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .lake/build
+            .lake/packages/PercolationContinuity/percolation/.lake/build
+          key: lake-proj-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-${{ github.sha }}
+          restore-keys: |
+            lake-proj-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}-
+
+      - name: Build the library and the audit surfaces
+        run: lake build PercolationAudit
+
+      - name: Restore verification tools
+        id: tools-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/tools
+          key: cmp-tools-${{ env.COMPARATOR_REV }}-${{ env.LEAN4EXPORT_REV }}-${{ env.NANODA_REV }}-${{ env.LANDRUN_REV }}
+
+      - name: Build comparator
+        if: steps.tools-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/leanprover/comparator ~/tools/comparator
+          git -C ~/tools/comparator checkout "$COMPARATOR_REV"
+          cd ~/tools/comparator && lake build
+
+      - name: Build lean4export (toolchain-matched)
+        if: steps.tools-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/leanprover/lean4export ~/tools/lean4export
+          git -C ~/tools/lean4export checkout "$LEAN4EXPORT_REV"
+          test "$(cat ~/tools/lean4export/lean-toolchain)" = "$(cat lean-toolchain)" \
+            || { echo "lean4export toolchain does not match project toolchain"; exit 1; }
+          cd ~/tools/lean4export && lake build
+
+      - name: Set up Go (for landrun)
+        if: steps.tools-cache.outputs.cache-hit != 'true'
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Build landrun (static)
+        if: steps.tools-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/Zouuup/landrun ~/tools/landrun-src
+          git -C ~/tools/landrun-src checkout "$LANDRUN_REV"
+          mkdir -p ~/tools/bin
+          cd ~/tools/landrun-src && CGO_ENABLED=0 go build -o ~/tools/bin/landrun ./cmd/landrun
+
+      - name: Build nanoda
+        if: steps.tools-cache.outputs.cache-hit != 'true'
+        run: |
+          command -v rustup >/dev/null || {
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+              | sh -s -- -y --profile minimal --default-toolchain none
+            . "$HOME/.cargo/env"
+          }
+          export PATH="$HOME/.cargo/bin:$PATH"
+          rustup toolchain install stable --profile minimal
+          git clone https://github.com/ammkrn/nanoda_lib ~/tools/nanoda_lib
+          git -C ~/tools/nanoda_lib checkout "$NANODA_REV"
+          cd ~/tools/nanoda_lib && PATH="$HOME/.cargo/bin:$PATH" cargo +stable build --release
+
+      - name: Save verification tools
+        if: steps.tools-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/tools
+          key: cmp-tools-${{ env.COMPARATOR_REV }}-${{ env.LEAN4EXPORT_REV }}-${{ env.NANODA_REV }}-${{ env.LANDRUN_REV }}
+
+      - name: Prove the landrun sandbox is enforcing
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe="${RUNNER_TEMP:-/tmp}/landrun-escape-probe"
+          rm -f "$probe"
+          "$HOME/tools/bin/landrun" --best-effort --ro / --rw /dev -ldd -add-exec \
+            -- /bin/sh -c "echo escaped > '$probe'" || true
+          if [ -e "$probe" ]; then
+            echo "landrun did NOT enforce: a write outside the sandbox succeeded."
+            exit 1
+          fi
+          echo "landrun is enforcing: the out-of-sandbox write was refused."
+
+      - name: Run the comparator on every pair
+        run: |
+          set -euo pipefail
+          export COMPARATOR_LANDRUN="$HOME/tools/bin/landrun"
+          export COMPARATOR_LEAN4EXPORT="$HOME/tools/lean4export/.lake/build/bin/lean4export"
+          export COMPARATOR_NANODA="$HOME/tools/nanoda_lib/target/release/nanoda_bin"
+          fail=0
+          for cfg in PercolationAudit/*/comparator.json; do
+            X="$(basename "$(dirname "$cfg")")"
+            [ -f "$(dirname "$cfg")/Solution.lean" ] || { echo "$X: no Solution.lean, skipped"; continue; }
+            echo "::group::$X"
+            if lake env ~/tools/comparator/.lake/build/bin/comparator "$cfg" \
+                 | tee "/tmp/comparator-$X.log" \
+               && grep -q "Your solution is okay!" "/tmp/comparator-$X.log"; then
+              echo "$X: OK"
+            else
+              echo "$X: FAILED"; fail=1
+            fi
+            echo "::endgroup::"
+          done
+          exit "$fail"
+
+      - name: Upload comparator logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: comparator-logs
+          path: /tmp/comparator-*.log
