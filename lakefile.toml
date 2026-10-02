@@ -17,3 +17,7 @@ name = "KNConjectures"
 
 [[lean_lib]]
 name = "Hypergraph"
+
+[[lean_lib]]
+name = "PercolationAudit"
+globs = ["PercolationAudit.+"]

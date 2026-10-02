@@ -1,0 +1,14 @@
+{
+  "challenge_module": "PercolationAudit.SiteCriticality.Challenge",
+  "solution_module": "PercolationAudit.SiteCriticality.Solution",
+  "theorem_names": [
+    "KNAll.StatementAudit.SiteCriticality.site_no_percolation_at_critical"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}
