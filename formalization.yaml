@@ -51,11 +51,26 @@ sources:
   author_endorsement: participated
 automation:
   methods:
-  - method: agent
-    models:
-    - Claude
-    - ChatGPT
-  spend_usd: TODO(author)
+    - method: "agent"
+      models:
+        - "Claude Opus 5.5"
+        - "Claude Sonnet 5"
+        - "Claude Opus 5"
+        - "DeepSeek v4.1 Flash"
+      framework: >-
+        Claude Code (Anthropic) and the Pi agent harness, directing the models above; the author
+        supervised the work and is responsible for the formalization.
+      tool_setup: >-
+        Lake builds under the pinned Lean toolchain and Mathlib revision. Every change is gated by
+        the axiom-closure and warning-free-build checks, and the public CI runs the Mathlib-only
+        comparator challenge/solution pairs against leanprover/comparator, lean4export and landrun
+        at the revisions recorded in .github/workflows/.
+      cost:
+        spend_usd: "not separately tracked (subscription and API accounts)"
+        hardware: "one Ubuntu workstation"
+      prompting_notes: >-
+        Human-directed agent work, closely supervised by the author. Statement differences from the
+        paper are disclosed under fidelity.
 status:
   scope: The finite bond results (Kozma-Nitzan Conjectures 1-4 and 6, including the strong joint-event
     and fixed-minimizer forms), answers to Questions 5, 7 and 9, a counterexample to the every-minimizer
