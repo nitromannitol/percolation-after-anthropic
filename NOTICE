@@ -4,7 +4,10 @@ This repository contains the subsequent KN, hypergraph, and site development,
 produced with ChatGPT and Claude, prompted by Ahmed Bou-Rabee. The original
 bond development is a pinned dependency. Its upstream notice is retained below.
 
---- Upstream attribution ---
+--- Upstream attribution for the separate pinned Anthropic dependency ---
+
+The following notice describes Anthropic's bond-percolation work. It does not identify
+an author, collaborator, or maintainer of this repository.
 
 PercolationContinuity -- Lean 4 / Mathlib formalisation of theta(p_c) = 0 for bond percolation on Z^d, d >= 2
 (https://github.com/anthropic-experimental/percolation)

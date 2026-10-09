@@ -1,7 +1,7 @@
 # PercolationAudit Comparator Surface
 
 This directory contains a Mathlib-only comparator challenge for the headline theorem of the
-formalization *Percolation after Anthropic* (Ahmed Bou-Rabee and Justin Leder): nearest-neighbour
+formalization *Percolation after Anthropic* (Ahmed Bou-Rabee): nearest-neighbour
 Bernoulli site percolation on `ℤ^d`, `d ≥ 3`, has no infinite open cluster at its critical
 parameter, `θ(p_c) = 0`.
 

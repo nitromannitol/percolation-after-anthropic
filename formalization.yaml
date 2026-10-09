@@ -10,9 +10,8 @@ project:
     pair under PercolationAudit/SiteCriticality/.
   authors:
   - Ahmed Bou-Rabee
-  - Justin Leder
   responsible_maintainers:
-  - Justin Leder
+  - Ahmed Bou-Rabee
   license: Apache-2.0
 classification:
   arxiv:
@@ -188,7 +187,6 @@ fidelity:
 review:
   status: in-progress
   reviewers:
-  - Justin Leder
   - Ahmed Bou-Rabee
   notes: The review and reproducible checks are recorded in VERIFICATION.md. Not external peer
     review.

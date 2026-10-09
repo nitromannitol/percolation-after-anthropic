@@ -4,7 +4,7 @@ import Mathlib
 # Site percolation at criticality — comparator challenge
 
 Mathlib-only comparator challenge for the headline theorem of the formalization
-*Percolation after Anthropic* (Ahmed Bou-Rabee and Justin Leder): nearest-neighbour Bernoulli
+*Percolation after Anthropic* (Ahmed Bou-Rabee): nearest-neighbour Bernoulli
 **site** percolation on `ℤ^d`, `d ≥ 3`, has no infinite open cluster at its critical parameter,
 `θ(p_c) = 0`.  The library's statement is `KNAll.Site.site_no_percolation_at_critical` in
 `Hypergraph/FinalCriticality.lean`.

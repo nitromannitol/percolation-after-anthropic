@@ -153,7 +153,7 @@ supervision of Ahmed Bou-Rabee; models, tooling, cost and review status are disc
 
 ## Authors, citation, acknowledgements
 
-The Lean development is by **Ahmed Bou-Rabee** and **Justin Leder**; Justin Leder is the responsible maintainer. To cite it, use [`CITATION.cff`](CITATION.cff). The conjectures and questions are those of [Kozma and Nitzan, *A reduction of the θ(p_c)=0 problem to a conjectured inequality*, arXiv:2401.12397](https://arxiv.org/abs/2401.12397). Built on Lean 4, mathlib and Lake, and on the Anthropic bond-percolation proof and its literature library; thanks to the Anthropic formal-math team.
+The Lean development in this repository is by **Ahmed Bou-Rabee**. It builds on Anthropic's separate bond-percolation proof as a pinned dependency; the authorship of that upstream work is distinct from the authorship of this repository. To cite this development, use [`CITATION.cff`](CITATION.cff). The conjectures and questions are those of [Kozma and Nitzan, *A reduction of the θ(p_c)=0 problem to a conjectured inequality*, arXiv:2401.12397](https://arxiv.org/abs/2401.12397). Built on Lean 4, mathlib and Lake; thanks to the Anthropic formal-math team for the upstream library.
 
 ## License
 
