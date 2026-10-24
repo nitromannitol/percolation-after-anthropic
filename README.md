@@ -4,6 +4,9 @@ A machine-checked **Lean 4** development of the Kozma–Nitzan connection inequa
 
 The development builds on [Anthropic's bond-percolation proof](https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation), a pinned git dependency, and on [mathlib](https://github.com/leanprover-community/mathlib4). The results on the Kozma–Nitzan conjectures are stated precisely in the accompanying manuscript, [`docs/kn-results.pdf`](docs/kn-results.pdf) ([LaTeX](docs/kn-results.tex)), which follows the numbering of [Kozma and Nitzan's paper](https://arxiv.org/abs/2401.12397). [`VERIFICATION.md`](VERIFICATION.md) records the review and the reproducible checks.
 
+[![CI](https://github.com/nitromannitol/percolation-after-anthropic/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/nitromannitol/percolation-after-anthropic/actions/workflows/build.yml)
+[![Comparator audit](https://github.com/nitromannitol/percolation-after-anthropic/actions/workflows/comparator.yml/badge.svg?branch=main)](https://github.com/nitromannitol/percolation-after-anthropic/actions/workflows/comparator.yml)
+
 ## What is proved
 
 **The headline theorem.** [`Hypergraph/FinalCriticality.lean`](Hypergraph/FinalCriticality.lean) proves
