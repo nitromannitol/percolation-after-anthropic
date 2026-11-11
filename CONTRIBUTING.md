@@ -7,8 +7,9 @@ are welcome.
 The bond-percolation library comes from
 [`anthropics/formal-math`](https://github.com/anthropics/formal-math) (subdirectory `percolation`),
 which `lakefile.toml` requires as a `git` dependency pinned to an exact commit; Lake materializes
-it under `.lake/packages/PercolationContinuity`. The commit need not be reachable from the upstream
-default branch, so `scripts/bootstrap.sh` fetches it explicitly before Lake resolves the package.
+it under `.lake/packages/PercolationContinuity`. The commit is on no branch of
+`anthropics/formal-math` (its default branch no longer contains `percolation/`), so
+`scripts/bootstrap.sh` fetches it explicitly before Lake resolves the package.
 The dependency is read-only for this project: extensions belong under `KNConjectures/` and
 `Hypergraph/`, and contributors must not edit the dependency's sources.
 
