@@ -1,6 +1,8 @@
 cff-version: 1.2.0
 message: "If you use this formalization, please cite it as below."
 title: "Percolation after Anthropic: Lean 4 proofs of the Kozma-Nitzan connection inequalities and of site percolation at criticality"
+type: software
+repository-code: "https://github.com/nitromannitol/percolation-after-anthropic"
 abstract: >-
   A machine-checked Lean 4 / mathlib development of the Kozma-Nitzan connection inequalities for
   Bernoulli percolation (Conjectures 1-4 and 6, affirmative answers to Questions 5, 7 and 9, and a
@@ -10,7 +12,6 @@ abstract: >-
   of Anthropic, a pinned git dependency. The library contains no sorry and no custom axiom; the
   Mathlib-only comparator challenge for the site theorem contains one intentional statement-level
   sorry whose completed solution is checked separately.
-type: software
 authors:
   - family-names: Bou-Rabee
     given-names: Ahmed
@@ -22,7 +23,6 @@ keywords:
   - site percolation
   - critical probability
 license: Apache-2.0
-repository-code: "https://github.com/nitromannitol/percolation-after-anthropic"
 references:
   - type: article
     title: "A reduction of the theta(p_c)=0 problem to a conjectured inequality"

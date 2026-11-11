@@ -25,8 +25,8 @@ sources:
   type: original-proof
   relationship: other
   note: 'The hypergraph and site-percolation extension and the counterexample to the every-minimizer reading
-    of Question 8 are first presented by this formalization. The Kozma-Nitzan results are written up in
-    docs/kn-results.tex. TODO(author): record the identifier of an accompanying write-up of the extension.'
+    of Question 8 are presented by this formalization. The Kozma-Nitzan results are written up in
+    docs/kn-results.tex.'
   author_endorsement: n/a
 - title: A reduction of the theta(p_c)=0 problem to a conjectured inequality
   authors:
@@ -48,28 +48,10 @@ sources:
   license: Apache-2.0
   note: ''
   author_endorsement: participated
-automation:
-  methods:
-    - method: "agent"
-      models:
-        - "Claude Opus 5.5"
-        - "Claude Sonnet 5"
-        - "Claude Opus 5"
-        - "DeepSeek v4.1 Flash"
-      framework: >-
-        Claude Code (Anthropic) and the Pi agent harness, directing the models above; the author
-        supervised the work and is responsible for the formalization.
-      tool_setup: >-
-        Lake builds under the pinned Lean toolchain and Mathlib revision. Every change is gated by
-        the axiom-closure and warning-free-build checks, and the public CI runs the Mathlib-only
-        comparator challenge/solution pairs against leanprover/comparator, lean4export and landrun
-        at the revisions recorded in .github/workflows/.
-      cost:
-        spend_usd: "not separately tracked (subscription and API accounts)"
-        hardware: "one Ubuntu workstation"
-      prompting_notes: >-
-        Human-directed agent work, closely supervised by the author. Statement differences from the
-        paper are disclosed under fidelity.
+related_formalizations:
+- id: https://github.com/anthropics/formal-math/tree/795efb86f191735c5481675763537cfb4ff37e55/percolation
+  relationship: builds-on
+  note: Anthropic, PBC, the bond-percolation proof of theta(p_c) = 0 for d >= 2, a git dependency pinned to commit 795efb86f191735c5481675763537cfb4ff37e55.
 status:
   scope: The finite bond results (Kozma-Nitzan Conjectures 1-4 and 6, including the strong joint-event
     and fixed-minimizer forms), answers to Questions 5, 7 and 9, a counterexample to the every-minimizer
@@ -175,6 +157,28 @@ status:
     - Classical.choice
     - Quot.sound
     literature_dependencies: []
+automation:
+  methods:
+    - method: "agent"
+      models:
+        - "Claude Opus 5.5"
+        - "Claude Sonnet 5"
+        - "Claude Opus 5"
+        - "DeepSeek v4.1 Flash"
+      framework: >-
+        Claude Code (Anthropic) and the Pi agent harness, directing the models above; the author
+        supervised the work and is responsible for the formalization.
+      tool_setup: >-
+        Lake builds under the pinned Lean toolchain and Mathlib revision. The CI workflow rejects
+        any use of sorry and checks the axiom reports, and the comparator workflow runs the
+        Mathlib-only comparator challenge/solution pair against leanprover/comparator, lean4export,
+        nanoda and landrun at the revisions recorded in .github/workflows/.
+      cost:
+        spend_usd: "not separately tracked (subscription and API accounts)"
+        hardware: "one Ubuntu workstation"
+      prompting_notes: >-
+        Human-directed agent work, closely supervised by the author. Statement differences from the
+        paper are disclosed under fidelity.
 fidelity:
   divergences: Question 8 is formalized in its every-minimizer reading (Question8EveryMin in KNConjectures/Question8Defs.lean),
     which is refuted by KNAll.not_question8EveryMin; the printed question does not say which minimizer is
@@ -190,5 +194,63 @@ review:
   - Ahmed Bou-Rabee
   notes: The review and reproducible checks are recorded in VERIFICATION.md. Not external peer
     review.
+alignment:
+  namespace: KNAll
+  statements:
+  - source: Headline theorem (site percolation on Z^d, d >= 3, has no infinite open cluster at criticality)
+    lean: KNAll.Site.site_no_percolation_at_critical
+    module: Hypergraph.FinalCriticality
+    status: proved
+    note: The only arguments are the dimension d and 3 <= d.
+  - source: Finite connection inequality for independent labelled hyperedges
+    lean: KNAll.Site.FiniteHyperGluingClosed.hyperedgeGluing
+    module: Hypergraph.FiniteHyperGluingClosed
+    status: proved
+    note: ''
+  - source: Kozma-Nitzan Conjecture 1 (arXiv:2401.12397, p. 3)
+    lean: KNAll.conjecture1_holds
+    module: KNConjectures.Conjectures
+    status: proved
+    note: A second derivation from the bond-percolation proof of the dependency is KN1Corollary.kozmaNitzan_conjecture1.
+  - source: Kozma-Nitzan Conjecture 2 (arXiv:2401.12397, p. 3) and its strong form
+    lean: KNAll.conjecture2_holds, KNAll.conjecture2Strong_holds
+    module: KNConjectures.Conjectures
+    status: proved
+    note: ''
+  - source: Kozma-Nitzan Conjecture 3
+    lean: KNAll.conjecture3_holds
+    module: KNConjectures.Conjectures
+    status: proved
+    note: Derived from Conjecture 1; the dependency states it as Percolation.Literature.KozmaNitzan2024_conjecture3.
+  - source: Kozma-Nitzan Conjecture 4 (arXiv:2401.12397, p. 32)
+    lean: KNAll.conjecture4_holds, KNAll.conjecture4Fixed_holds, KNAll.conjecture4_clusterProperty_holds
+    module: KNConjectures.Conjectures
+    status: proved
+    note: The fixed-minimizer form is stronger than the printed statement.
+  - source: Kozma-Nitzan Conjecture 6 (arXiv:2401.12397, p. 34)
+    lean: KNAll.Guarded.conjecture6_holds, KNAll.Guarded.conjecture6Strong_holds
+    module: KNConjectures.Conjecture6Proof
+    status: proved
+    note: The strong form needs no hypothesis on the endpoints.
+  - source: Kozma-Nitzan Question 5
+    lean: KNAll.question5_holds
+    module: KNConjectures.Question5
+    status: proved
+    note: The right-hand side is the printed P(o <-> b).
+  - source: Kozma-Nitzan Question 7 (arXiv:2401.12397, p. 36, display (41))
+    lean: KNAll.question7_holds
+    module: KNConjectures.Conjectures
+    status: proved
+    note: ''
+  - source: Kozma-Nitzan Question 8, every-minimizer reading
+    lean: KNAll.not_question8EveryMin
+    module: KNConjectures.Question8Counterexample
+    status: proved
+    note: Proves the negation of the every-minimizer reading; the strict-minimizer reading is not decided.
+  - source: Kozma-Nitzan Question 9 (arXiv:2401.12397, p. 36)
+    lean: KNAll.question9_holds
+    module: KNConjectures.Question9
+    status: proved
+    note: Obtained from KNAll.setSourceFixedMin_holds.
 acknowledgements: Built on the Anthropic bond-percolation proof and its literature library; thanks to
   the Anthropic formal-math team.
