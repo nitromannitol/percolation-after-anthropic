@@ -196,9 +196,9 @@ cd percolation-after-anthropic
 bash scripts/bootstrap.sh
 ```
 
-The bootstrap explicitly fetches the pinned upstream commit, which need not be reachable from
-the upstream default branch, downloads the mathlib cache, and runs the normal Lake build. Later
-builds use
+The bootstrap explicitly fetches the pinned upstream commit, which is on no branch of
+`anthropics/formal-math` (its default branch no longer contains `percolation/`), downloads the
+mathlib cache, and runs the normal Lake build. Later builds use
 
 ```sh
 lake exe cache get          # prebuilt mathlib
