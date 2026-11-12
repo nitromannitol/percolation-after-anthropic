@@ -8,14 +8,7 @@ This module formalises `math/CORRIDOR_MOVE.md`.
 
 ## The point
 
-The corridor move as usually stated is **false** when only the outgoing corridor is assumed fresh.
-`naive_corridorMove_false` is the machine-checked refutation: it exhibits a transcript whose
-inspected set misses the outgoing corridor `E z y` entirely, whose pinned probability of reaching
-the incoming target `M z` through `E w z` is exactly `1`, and whose pinned probability of reaching
-`M y` through `E w z ∪ E z y` is exactly `0`.  The obstruction is a recorded **closed wall inside
-the incoming corridor**, at transverse level `5 r`; freshness of `E z y` says nothing about it.
-
-Consequently every statement below carries the corrected hypotheses of the note:
+Every statement below carries these hypotheses:
 
 * the whole site subbox of the move, `Q z ∪ E z y` -- *including the current central box* -- is
   fresh (`hfresh`), not just the outgoing corridor;
@@ -493,395 +486,6 @@ theorem longTarget_cube (c : Site d) (i : Fin d) (σ : ℤ) (hσ : σ = 1 ∨ σ
 
 end Geometry
 
-/-! ## §2.  The counterexample: freshness of the outgoing corridor is not enough
-
-Take `w = 0`, `z = e₁`, `y = e₁ + e₂`.  A transcript may record a straight open segment from the
-origin to the centre of `M z`, together with a **closed wall inside the incoming corridor** at
-transverse level `5 r`.  Nothing of this touches the outgoing corridor `E z y`, whose sites all
-have transverse coordinate strictly above `5 r`.  So the freshness hypothesis holds, the incoming
-reservation holds with probability exactly one, and the outgoing connection is impossible. -/
-
-section Counterexample
-
-variable {d : ℕ} [NeZero d]
-
-/-- The first entry of an open confined walk into a region: an open edge from outside `D` into
-`D`, both endpoints inside the confining set. -/
-private theorem firstEntry_walk {V : Type*} {G : SimpleGraph V} {W D : Set V} :
-    ∀ {o b : V}, (openSiteGraph G W).Walk o b → o ∉ D → b ∈ D →
-      ∃ u v : V, G.Adj u v ∧ u ∉ D ∧ v ∈ D ∧ u ∈ W ∧ v ∈ W := by
-  intro o b p
-  induction p with
-  | nil => intro ho hb; exact absurd hb ho
-  | @cons a m b hadj q ih =>
-      intro ha hb
-      have hadj' := (openSiteGraph_adj_iff' G W a m).1 hadj
-      by_cases hm : m ∈ D
-      · exact ⟨a, m, hadj'.1, ha, hm, hadj'.2.1, hadj'.2.2⟩
-      · exact ih hm hb
-
-theorem exists_firstEntry {V : Type*} {G : SimpleGraph V} {S D : Set V} {o b : V}
-    {ω : SiteConfig V} (ho : o ∉ D) (hb : b ∈ D) (hconn : ω ∈ connWithin G S o b) :
-    ∃ u v : V, G.Adj u v ∧ u ∉ D ∧ v ∈ D ∧ v ∈ ω ∩ S := by
-  obtain ⟨-, hreach⟩ := hconn
-  obtain ⟨p⟩ := hreach
-  obtain ⟨u, v, huv, hu, hv, -, hvW⟩ := firstEntry_walk (G := G) (D := D) p ho hb
-  exact ⟨u, v, huv, hu, hv, hvW⟩
-
-/-- The macro-neighbour `e₁` of the origin. -/
-def zdir : Site 2 := MacroExp.mvUnit 0 true
-
-/-- The macro-neighbour `e₁ + e₂` of `zdir`. -/
-def ydir : Site 2 := zdir + MacroExp.mvUnit 1 true
-
-theorem val_zero_lt (d : ℕ) [NeZero d] : (0 : Fin d).val < 2 := by
-  rw [Fin.val_zero]; omega
-
-theorem val_one_eq (hd : 2 ≤ d) : (1 : Fin d).val = 1 := by
-  rw [Fin.val_one', Nat.mod_eq_of_lt (by omega)]
-
-theorem zero_ne_one_fin (hd : 2 ≤ d) : (0 : Fin d) ≠ (1 : Fin d) := by
-  intro hc
-  have := congrArg Fin.val hc
-  rw [Fin.val_zero, val_one_eq hd] at this
-  omega
-
-theorem emb_zdir_zero : (MacroExp.emb zdir : Site d) (0 : Fin d) = 1 := by
-  rw [MacroExp.emb_apply_of_lt zdir (val_zero_lt d)]
-  have : (⟨(0 : Fin d).val, val_zero_lt d⟩ : Fin 2) = (0 : Fin 2) := by
-    apply Fin.ext; simp
-  rw [this]
-  simp [zdir, MacroExp.mvUnit]
-
-theorem emb_zdir_one (hd : 2 ≤ d) : (MacroExp.emb zdir : Site d) (1 : Fin d) = 0 := by
-  have hlt : (1 : Fin d).val < 2 := by rw [val_one_eq hd]; omega
-  rw [MacroExp.emb_apply_of_lt zdir hlt]
-  have : (⟨(1 : Fin d).val, hlt⟩ : Fin 2) = (1 : Fin 2) := by
-    apply Fin.ext; rw [val_one_eq hd]; rfl
-  rw [this]
-  simp [zdir, MacroExp.mvUnit]
-
-theorem emb_ydir_one (hd : 2 ≤ d) : (MacroExp.emb ydir : Site d) (1 : Fin d) = 1 := by
-  have hlt : (1 : Fin d).val < 2 := by rw [val_one_eq hd]; omega
-  rw [MacroExp.emb_apply_of_lt ydir hlt]
-  have : (⟨(1 : Fin d).val, hlt⟩ : Fin 2) = (1 : Fin 2) := by
-    apply Fin.ext; rw [val_one_eq hd]; rfl
-  rw [this]
-  simp [ydir, zdir, MacroExp.mvUnit]
-
-theorem emb_ydir_of_ne_one (hd : 2 ≤ d) {j : Fin d} (hj : j ≠ (1 : Fin d)) :
-    (MacroExp.emb ydir : Site d) j = (MacroExp.emb zdir : Site d) j := by
-  by_cases hlt : j.val < 2
-  · rw [MacroExp.emb_apply_of_lt ydir hlt, MacroExp.emb_apply_of_lt zdir hlt]
-    have hne : (⟨j.val, hlt⟩ : Fin 2) ≠ (1 : Fin 2) := by
-      intro hc
-      apply hj
-      apply Fin.ext
-      have := congrArg Fin.val hc
-      rw [val_one_eq hd]
-      simpa using this
-    simp [ydir, MacroExp.mvUnit, hne]
-  · rw [MacroExp.emb_apply_of_not_lt ydir hlt, MacroExp.emb_apply_of_not_lt zdir hlt]
-
-theorem ctr_zdir_one (hd : 2 ≤ d) (r : ℕ) : MacroExp.ctr d r zdir (1 : Fin d) = 0 := by
-  simp [MacroExp.ctr, emb_zdir_one hd]
-
-theorem ctr_ydir_one (hd : 2 ≤ d) (r : ℕ) :
-    MacroExp.ctr d r ydir (1 : Fin d) = 20 * (r : ℤ) := by
-  simp [MacroExp.ctr, emb_ydir_one hd]
-
-theorem ctr_ydir_of_ne_one (hd : 2 ≤ d) (r : ℕ) {j : Fin d} (hj : j ≠ (1 : Fin d)) :
-    MacroExp.ctr d r ydir j = MacroExp.ctr d r zdir j := by
-  simp [MacroExp.ctr, emb_ydir_of_ne_one hd hj]
-
-theorem rad_one (hd : 2 ≤ d) (R t : ℕ) : MacroExp.rad R t (1 : Fin d) = (R : ℤ) := by
-  unfold MacroExp.rad
-  rw [if_pos (by rw [val_one_eq hd]; omega)]
-
-
-/-- **(2.2).  The outgoing corridor lies strictly above the wall.**  Every site of `E z y` has
-transverse coordinate larger than `5 r`. -/
-theorem lt_coord_one_of_mem_E_out (hd : 2 ≤ d) {r t : ℕ} {x : Site d}
-    (hx : x ∈ MacroExp.E d r t zdir ydir) : 5 * (r : ℤ) < x (1 : Fin d) := by
-  classical
-  rw [MacroExp.E, Finset.mem_sdiff, MacroExp.mem_hbox] at hx
-  obtain ⟨hhull, hQ⟩ := hx
-  by_contra hcon
-  push Not at hcon
-  apply hQ
-  rw [MacroExp.Q, MacroExp.mem_abox]
-  intro j
-  by_cases hj : j = (1 : Fin d)
-  · subst hj
-    have h1 := hhull (1 : Fin d)
-    rw [ctr_zdir_one hd, ctr_ydir_one hd, rad_one hd] at h1
-    rw [ctr_zdir_one hd, rad_one hd]
-    have hr0 : (0 : ℤ) ≤ (r : ℤ) := Int.natCast_nonneg r
-    have hmin : min (0 : ℤ) (20 * (r : ℤ)) = 0 := min_eq_left (by omega)
-    rw [hmin] at h1
-    omega
-  · have h1 := hhull j
-    rw [ctr_ydir_of_ne_one hd r hj] at h1
-    simpa using h1
-
-/-- The incoming corridor stays within transverse distance `5 r` of the axis. -/
-theorem abs_coord_one_of_mem_E_in (hd : 2 ≤ d) {r t : ℕ} {x : Site d}
-    (hx : x ∈ MacroExp.E d r t 0 zdir) : |x (1 : Fin d)| ≤ 5 * (r : ℤ) := by
-  classical
-  rw [MacroExp.E, Finset.mem_sdiff, MacroExp.mem_hbox] at hx
-  have h1 := hx.1 (1 : Fin d)
-  rw [ctr_zdir_one hd, rad_one hd] at h1
-  have hz : MacroExp.ctr d r (0 : Site 2) (1 : Fin d) = 0 := by
-    simp [MacroExp.ctr]
-  rw [hz] at h1
-  simp only [min_self, max_self] at h1
-  rw [abs_le]
-  push_cast at h1 ⊢
-  omega
-
-/-- The straight open segment from the origin to the centre of `M z`. -/
-def lineL (d r : ℕ) [NeZero d] : Finset (Site d) :=
-  (Finset.range (20 * r + 1)).image fun k : ℕ => (Pi.single (0 : Fin d) (k : ℤ) : Site d)
-
-theorem mem_lineL {r : ℕ} {x : Site d} :
-    x ∈ lineL d r ↔ ∃ k : ℕ, k ≤ 20 * r ∧ x = Pi.single (0 : Fin d) (k : ℤ) := by
-  classical
-  simp only [lineL, Finset.mem_image, Finset.mem_range]
-  constructor
-  · rintro ⟨k, hk, rfl⟩; exact ⟨k, by omega, rfl⟩
-  · rintro ⟨k, hk, rfl⟩; exact ⟨k, by omega, rfl⟩
-
-theorem coord_one_lineL (hd : 2 ≤ d) {r : ℕ} {x : Site d} (hx : x ∈ lineL d r) :
-    x (1 : Fin d) = 0 := by
-  obtain ⟨k, -, rfl⟩ := mem_lineL.1 hx
-  have hne : (1 : Fin d) ≠ (0 : Fin d) := (zero_ne_one_fin hd).symm
-  simp [hne]
-
-/-- **The recorded closed wall (2.1).**  The cross-section of the *incoming* corridor at
-transverse level `5 r`.  It is disjoint from the outgoing corridor. -/
-def blockN (d r t : ℕ) [NeZero d] : Finset (Site d) :=
-  (MacroExp.E d r t 0 zdir).filter fun x => x (1 : Fin d) = 5 * (r : ℤ)
-
-theorem mem_blockN {r t : ℕ} {x : Site d} :
-    x ∈ blockN d r t ↔ x ∈ MacroExp.E d r t 0 zdir ∧ x (1 : Fin d) = 5 * (r : ℤ) := by
-  classical
-  simp [blockN]
-
-/-- **(2.2).  The recorded set misses the outgoing corridor entirely.** -/
-theorem inspected_disjoint_E_out (hd : 2 ≤ d) {r t : ℕ} (hr : 0 < r) :
-    Disjoint (lineL d r ∪ blockN d r t) (MacroExp.E d r t zdir ydir) := by
-  rw [Finset.disjoint_left]
-  intro x hx hxE
-  have hlow := lt_coord_one_of_mem_E_out hd hxE
-  have hr' : (1 : ℤ) ≤ (r : ℤ) := by exact_mod_cast hr
-  rcases Finset.mem_union.1 hx with hx | hx
-  · rw [coord_one_lineL hd hx] at hlow; omega
-  · rw [(mem_blockN.1 hx).2] at hlow; omega
-
-/-- **The counterexample transcript.**  Recorded open: the segment `lineL`.  Recorded closed: the
-wall `blockN`.  Nothing else is inspected. -/
-def badTr (d r t : ℕ) [NeZero d] : MacroExp.Tr d where
-  inspected := lineL d r ∪ blockN d r t
-  openSites := lineL d r
-  openSites_subset := Finset.subset_union_left
-  openV := {0}
-  closedV := ∅
-
-@[simp] theorem badTr_inspected (r t : ℕ) :
-    (badTr d r t).inspected = lineL d r ∪ blockN d r t := rfl
-
-@[simp] theorem badTr_openSites (r t : ℕ) : (badTr d r t).openSites = lineL d r := rfl
-
-theorem badTr_state (r t : ℕ) (x : Site d) :
-    (badTr d r t).state x ↔ x ∈ lineL d r := Iff.rfl
-
-
-theorem emb_zdir_of_ne_zero (hd : 2 ≤ d) {j : Fin d} (hj : j ≠ (0 : Fin d)) :
-    (MacroExp.emb zdir : Site d) j = 0 := by
-  by_cases hlt : j.val < 2
-  · have hj1 : j = (1 : Fin d) := by
-      apply Fin.ext
-      rw [val_one_eq hd]
-      have : j.val ≠ 0 := fun hc => hj (Fin.ext (by rw [hc, Fin.val_zero]))
-      omega
-    rw [hj1, emb_zdir_one hd]
-  · rw [MacroExp.emb_apply_of_not_lt zdir hlt]
-
-theorem ctr_zdir_eq (hd : 2 ≤ d) (r : ℕ) :
-    (MacroExp.ctr d r zdir : Site d) = Pi.single (0 : Fin d) (20 * (r : ℤ)) := by
-  funext j
-  by_cases hj : j = (0 : Fin d)
-  · subst hj
-    simp [MacroExp.ctr, emb_zdir_zero]
-  · rw [MacroExp.ctr]
-    simp [emb_zdir_of_ne_zero hd hj, hj]
-
-/-- Consecutive sites of the segment are lattice-adjacent. -/
-theorem adj_line (k : ℕ) :
-    (zdGraph d).Adj (Pi.single (0 : Fin d) (k : ℤ)) (Pi.single (0 : Fin d) ((k : ℤ) + 1)) := by
-  rw [zdGraph_adj_iff]
-  refine ⟨(0 : Fin d), Or.inl ?_⟩
-  funext j
-  by_cases hj : j = (0 : Fin d)
-  · subst hj; simp
-  · simp [hj]
-
-/-- The pinned configuration contains every recorded-open site of the segment. -/
-theorem lineL_subset_substitute (r t : ℕ) (ω : SiteConfig (Site d)) :
-    (↑(lineL d r) : Set (Site d)) ⊆
-      substitute (↑(badTr d r t).inspected : Set (Site d)) (badTr d r t).state ω := by
-  intro x hx
-  have hxI : x ∈ (↑(badTr d r t).inspected : Set (Site d)) := by
-    rw [badTr_inspected, Finset.coe_union]
-    exact Or.inl hx
-  rw [mem_substitute_of_mem _ hxI]
-  exact Finset.mem_coe.1 hx
-
-/-- **(2.3).  The incoming reservation holds with probability exactly one.**  The segment is
-recorded open, so *every* configuration joins the origin to the centre of `M z`. -/
-theorem prob_incoming_eq_one (hd : 2 ≤ d) (r t : ℕ) (q : unitInterval) :
-    (badTr d r t).prob (fun _ : Site d => q)
-      (connWithinSet (zdGraph d)
-        (↑((badTr d r t).inspected ∪ MacroExp.E d r t 0 zdir) : Set (Site d))
-        (MacroExp.emb 0) (↑(MacroExp.M d r t zdir) : Set (Site d))) = 1 := by
-  classical
-  rw [FRDom.Transcript.prob_eq, pinnedProb]
-  have huniv : substitute (↑(badTr d r t).inspected : Set (Site d)) (badTr d r t).state ⁻¹'
-      connWithinSet (zdGraph d)
-        (↑((badTr d r t).inspected ∪ MacroExp.E d r t 0 zdir) : Set (Site d))
-        (MacroExp.emb 0) (↑(MacroExp.M d r t zdir) : Set (Site d)) = Set.univ := by
-    ext ω
-    simp only [Set.mem_univ, iff_true, Set.mem_preimage]
-    set ω' := substitute (↑(badTr d r t).inspected : Set (Site d)) (badTr d r t).state ω with hω'
-    have hline : (↑(lineL d r) : Set (Site d)) ⊆ ω' := lineL_subset_substitute r t ω
-    set S : Set (Site d) :=
-      (↑((badTr d r t).inspected ∪ MacroExp.E d r t 0 zdir) : Set (Site d)) with hS
-    have hlineS : (↑(lineL d r) : Set (Site d)) ⊆ S := by
-      rw [hS, badTr_inspected, Finset.coe_union, Finset.coe_union]
-      intro x hx
-      exact Or.inl (Or.inl hx)
-    have hmem : ∀ k : ℕ, k ≤ 20 * r →
-        (Pi.single (0 : Fin d) (k : ℤ) : Site d) ∈ ω' ∩ S := by
-      intro k hk
-      have hL : (Pi.single (0 : Fin d) (k : ℤ) : Site d) ∈ (↑(lineL d r) : Set (Site d)) :=
-        Finset.mem_coe.2 (mem_lineL.2 ⟨k, hk, rfl⟩)
-      exact ⟨hline hL, hlineS hL⟩
-    have hreach : ∀ k : ℕ, k ≤ 20 * r →
-        (openSiteGraph (zdGraph d) (ω' ∩ S)).Reachable
-          (Pi.single (0 : Fin d) ((0 : ℕ) : ℤ)) (Pi.single (0 : Fin d) (k : ℤ)) := by
-      intro k
-      induction k with
-      | zero => intro _; exact SimpleGraph.Reachable.refl _
-      | succ k ih =>
-          intro hk
-          have hstep : (openSiteGraph (zdGraph d) (ω' ∩ S)).Adj
-              (Pi.single (0 : Fin d) (k : ℤ)) (Pi.single (0 : Fin d) ((k : ℤ) + 1)) := by
-            rw [openSiteGraph_adj_iff']
-            exact ⟨adj_line k, hmem k (by omega), hmem (k + 1) (by omega) |>.imp id id⟩
-          have hcast : (Pi.single (0 : Fin d) (((k + 1 : ℕ)) : ℤ) : Site d)
-              = Pi.single (0 : Fin d) ((k : ℤ) + 1) := by push_cast; rfl
-          rw [hcast]
-          exact (ih (by omega)).trans hstep.reachable
-    have hzero : (MacroExp.emb (0 : Site 2) : Site d) = Pi.single (0 : Fin d) ((0 : ℕ) : ℤ) := by
-      rw [MacroExp.emb_zero]
-      funext j; simp
-    rw [mem_connWithinSet_iff]
-    refine ⟨MacroExp.ctr d r zdir, Finset.mem_coe.2 (MacroExp.ctr_mem_M r t zdir), ?_, ?_⟩
-    · rw [hzero]; exact hmem 0 (by omega)
-    · rw [hzero, ctr_zdir_eq hd]
-      have h20 : (20 * (r : ℤ)) = ((20 * r : ℕ) : ℤ) := by push_cast; ring
-      rw [h20]
-      exact hreach (20 * r) le_rfl
-  rw [huniv]
-  exact probReal_univ
-
-/-- **(2.4)–(2.5).  The outgoing connection is impossible.**  Every lattice path from the origin
-to `M y` meets transverse level `5 r`; there the only allowed sites are the recorded-closed wall,
-so no configuration realises the connection. -/
-theorem prob_outgoing_eq_zero (hd : 2 ≤ d) {r t : ℕ} (hr : 0 < r) (q : unitInterval) :
-    (badTr d r t).prob (fun _ : Site d => q)
-      (connWithinSet (zdGraph d)
-        (↑((badTr d r t).inspected ∪ MacroExp.E d r t 0 zdir ∪ MacroExp.E d r t zdir ydir) :
-          Set (Site d))
-        (MacroExp.emb 0) (↑(MacroExp.M d r t ydir) : Set (Site d))) = 0 := by
-  classical
-  have hr' : (1 : ℤ) ≤ (r : ℤ) := by exact_mod_cast hr
-  rw [FRDom.Transcript.prob_eq, pinnedProb]
-  have hempty : substitute (↑(badTr d r t).inspected : Set (Site d)) (badTr d r t).state ⁻¹'
-      connWithinSet (zdGraph d)
-        (↑((badTr d r t).inspected ∪ MacroExp.E d r t 0 zdir ∪ MacroExp.E d r t zdir ydir) :
-          Set (Site d))
-        (MacroExp.emb 0) (↑(MacroExp.M d r t ydir) : Set (Site d)) = ∅ := by
-    ext ω
-    simp only [Set.mem_empty_iff_false, iff_false, Set.mem_preimage]
-    intro hconn
-    rw [mem_connWithinSet_iff] at hconn
-    obtain ⟨b, hb, hconn⟩ := hconn
-    -- the target is above transverse level `17 r`
-    have hbD : 5 * (r : ℤ) ≤ b (1 : Fin d) := by
-      have := (MacroExp.mem_abox.1 (Finset.mem_coe.1 hb)) (1 : Fin d)
-      rw [ctr_ydir_one hd, rad_one hd] at this
-      push_cast at this
-      omega
-    have hoD : (MacroExp.emb (0 : Site 2) : Site d) ∉ {x : Site d | 5 * (r : ℤ) ≤ x (1 : Fin d)} := by
-      rw [MacroExp.emb_zero]
-      simp only [Set.mem_setOf_eq]
-      intro hc
-      simp only [Pi.zero_apply] at hc
-      omega
-    obtain ⟨u, v, huv, hu, hv, hvS⟩ := exists_firstEntry hoD hbD hconn
-    -- the crossing site sits exactly at level `5 r`
-    have hstep : |v (1 : Fin d) - u (1 : Fin d)| ≤ 1 := by
-      obtain ⟨i, hi | hi⟩ := (zdGraph_adj_iff u v).1 huv
-      · rw [hi]
-        by_cases hij : i = (1 : Fin d) <;> simp [hij]
-      · rw [hi]
-        by_cases hij : i = (1 : Fin d) <;> simp [hij]
-    simp only [Set.mem_setOf_eq, not_le] at hu
-    simp only [Set.mem_setOf_eq] at hv
-    rw [abs_le] at hstep
-    have hv5 : v (1 : Fin d) = 5 * (r : ℤ) := by omega
-    -- the crossing site is recorded, hence recorded closed
-    have hvI : v ∈ (↑(badTr d r t).inspected : Set (Site d)) := by
-      have hvmem := hvS.2
-      rw [Finset.coe_union, Finset.coe_union] at hvmem
-      rcases hvmem with (hvm | hvm) | hvm
-      · exact hvm
-      · rw [badTr_inspected, Finset.coe_union]
-        exact Or.inr (Finset.mem_coe.2 (mem_blockN.2 ⟨Finset.mem_coe.1 hvm, hv5⟩))
-      · exact absurd (lt_coord_one_of_mem_E_out hd (Finset.mem_coe.1 hvm)) (by omega)
-    have hvopen := hvS.1
-    rw [mem_substitute_of_mem _ hvI] at hvopen
-    have : v (1 : Fin d) = 0 := coord_one_lineL hd hvopen
-    omega
-  rw [hempty]
-  exact measureReal_empty
-
-/-- **§2.  The naive corridor move is false.**  There is a transcript whose inspected set is
-disjoint from the outgoing corridor, whose incoming reservation to `M z` through the incoming
-corridor holds with probability `1`, and whose outgoing connection to `M y` through both corridors
-has probability `0`.  No tolerance repairs this: the hypothesis holds at every `ε > 0` and the
-conclusion fails at every `ρ ≤ 1`. -/
-theorem naive_corridorMove_false (hd : 2 ≤ d) {r t : ℕ} (hr : 0 < r) (q : unitInterval)
-    {ε ρ : ℝ} (hε : 0 < ε) (hρ : ρ ≤ 1) :
-    ∃ h : MacroExp.Tr d,
-      Disjoint h.inspected (MacroExp.E d r t zdir ydir) ∧
-      1 - ε < h.prob (fun _ : Site d => q)
-        (connWithinSet (zdGraph d)
-          (↑(h.inspected ∪ MacroExp.E d r t 0 zdir) : Set (Site d))
-          (MacroExp.emb 0) (↑(MacroExp.M d r t zdir) : Set (Site d))) ∧
-      ¬ 1 - ρ < h.prob (fun _ : Site d => q)
-        (connWithinSet (zdGraph d)
-          (↑(h.inspected ∪ MacroExp.E d r t 0 zdir ∪ MacroExp.E d r t zdir ydir) : Set (Site d))
-          (MacroExp.emb 0) (↑(MacroExp.M d r t ydir) : Set (Site d))) := by
-  refine ⟨badTr d r t, ?_, ?_, ?_⟩
-  · rw [badTr_inspected]; exact inspected_disjoint_E_out hd hr
-  · rw [prob_incoming_eq_one hd r t q]; linarith
-  · rw [prob_outgoing_eq_zero hd hr q]
-    intro hc
-    linarith
-
-end Counterexample
 
 /-! ## §7.3.  Freshness, and the manuscript sets inside the macro geometry -/
 
@@ -1370,7 +974,6 @@ Hypotheses, exactly those of §0 and §7.3.
 * the slab is thick enough for the isotropic manuscript cubes: `5 r ≤ t` (§8.3);
 * **the whole site subbox of the move is fresh**: `h.inspected` misses `Q z ∪ E z y`, so the
   *current central box*, not only the outgoing corridor, carries the unconditioned parameter.
-  This is what the counterexample `naive_corridorMove_false` shows cannot be dropped;
 * the origin lies outside that subbox;
 * `hface` and `hlong` are the `d+1` calls of manuscript Lemma 7.3, restricted to a fresh subbox
   inside the allowed region and to the two target relations §7.1 and §7.2 verify;
@@ -1447,15 +1050,14 @@ theorem corridorMove (hd : 2 ≤ d) {r t R : ℕ} {h : MacroExp.Tr d} {q : unitI
 
 end Move
 
-/-! ## §10.  The three failed design patterns, checked against the corrected move -/
+/-! ## §10.  Nonemptiness of the targets, and stability of the move estimate -/
 
 section Regression
 
 variable {d : ℕ}
 
-/-- **§10.1–10.2.  No target is a designated site and none is empty.**  A quarter-face contains the
-axial site of its cube, so the relay is chosen from a whole face, never from one predesignated
-unread vertex. -/
+/-- **§10.1–10.2.  Targets are nonempty.**  A quarter-face contains the axial site of its cube, so
+the relay is chosen from a whole face, never from one predesignated unread vertex. -/
 theorem qface_nonempty (v : Site d) {l : ℤ} (hl : 0 ≤ l) (i : Fin d) {σ : ℤ}
     (hσ : σ = 1 ∨ σ = -1) (τ : Fin d → ℤ) : (qface v l i σ τ).Nonempty := by
   refine ⟨v + Pi.single i (σ * l), ?_⟩
@@ -1665,7 +1267,7 @@ variable {d : ℕ} [NeZero d]
 both corridors are.  At a good non-terminal transcript the incoming half is
 `MacroExp.inspected_disjoint_pending_E` and the outgoing half is
 `inspected_disjoint_pending_out_E`; `Q_subset_E` turns the first into freshness of the current
-central box, which is the hypothesis `naive_corridorMove_false` shows cannot be dropped. -/
+central box. -/
 theorem fresh_subbox (hd : 2 ≤ d) (r t : ℕ) (hr : 0 < r) {h : MacroExp.Tr d} {w z y : Site 2}
     (hwz : w ≠ z) (hin : Disjoint h.inspected (MacroExp.E d r t w z))
     (hout : Disjoint h.inspected (MacroExp.E d r t z y)) :

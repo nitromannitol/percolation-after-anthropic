@@ -40,21 +40,6 @@ geometry can supply.
 `siteWalkOfInjection` is an exploration reading one fresh site at a time, for which
 `SiteWalk.siteWalkOfInjection_nextBound` computes the one-step probability to be exactly the
 density.  It witnesses that the hypotheses above are not vacuous.
-
-## Part 4: what happens to `ReachTransfer`
-
-`KNAll.Site.ReachTransfer` asks for `E.reachProb ≤ μ(...)` with `E = S.exploration hrho hS`, whose
-step probability is read at the single transcript `S.hist w` attached to the word `w`.  It is not
-merely unproved: `not_reachTransfer` exhibits a `MacroSetup` satisfying every field and the full
-strength of `MacroSetup.StepBound` at `rho = 0` for which `ReachTransfer` is false.  The reason is
-that `MacroSetup` relates `joined`, `step` and `occupied` to nothing: the word a run produces is not
-tied to any configuration, so no inequality against the product measure can hold.  Two further
-things go wrong even once such a link is added.  The transcript of a genuine exploration is not a
-function of the word, since examining a block reveals the states of all of its sites while the word
-records only the Boolean summary, so `walkProb S.stepProb` reads the step probability at one
-transcript among many and need not dominate the truth.  And the composite the renormalisation
-consumes is `c ≤ μ(...)`; the intermediate `E.reachProb` is inessential, and it is the composite
-that is proved here.
 -/
 
 noncomputable section
@@ -845,7 +830,7 @@ theorem add_numJoined_le_card_runHist
 
 /-- **The transfer.**  The Bernoulli(`1 - rho`) reach probability of an upward-closed word event is
 a lower bound for the product-measure probability of the corresponding configuration event.  This is
-the statement `ReachTransfer` was standing in for, proved rather than assumed. -/
+the comparison of the word event with the configuration event, proved. -/
 theorem bernoulliReachProb_le_prob_run {rho : ℝ} (hrho0 : 0 ≤ rho) (hrho1 : rho ≤ 1)
     (hadm : ∀ (h : MacroHistory d S.Index) (b : Bool) (ω : SiteConfig (Site d)),
       S.Admissible h → S.Admissible (S.step h b ω))
@@ -860,8 +845,7 @@ probability of reaching every target size, together with the one-step contract a
 that a joined block contributes a site of the cluster of `x`, makes the percolation probability at
 `x` positive.
 
-This is the conclusion `thetaSiteOn_pos_of_reachTransfer` reaches from `ReachTransfer`; here the
-transfer is proved, not assumed. -/
+-/
 theorem thetaSiteOn_pos (G : SimpleGraph (Site d)) (x : Site d) (p : unitInterval)
     (hden : S.density = fun _ => p)
     (hadm : ∀ (h : MacroHistory d S.Index) (b : Bool) (ω : SiteConfig (Site d)),
@@ -1035,73 +1019,6 @@ theorem siteWalkOfInjection_transfer (d : ℕ) (site : ℕ → Site d)
 
 end SiteWalk
 
-/-! ## Part 4: `ReachTransfer` is false at the generality it is stated
-
-`MacroSetup` carries no hypothesis relating `joined`, `step` and `occupied` to one another or to a
-configuration, so the Boolean word a run produces is not tied to anything the product measure can
-see.  The setup below satisfies every field of `MacroSetup` and the full strength of
-`MacroSetup.StepBound` at `rho = 0`, yet its reach probability is `1` while the configuration event
-`ReachTransfer` compares it with is empty.  So `ReachTransfer` does not follow from `StepBound`, and
-the seam cannot be closed without adding to `MacroSetup` the link that `SiteWalk` supplies: an
-examination that reads the configuration, on a block disjoint from everything read before. -/
-
-/-- A `MacroSetup` in which every examination succeeds and nothing is ever inspected. -/
-def trivialSetup (d : ℕ) (q : Site d → unitInterval) : MacroSetup d where
-  Index := ℕ
-  block _ := (∅ : Set (Site d))
-  block_disjoint _ _ _ := by simp
-  density := q
-  joined _ := Set.univ
-  Admissible h := h.occupied = ∅
-  start := ⟨∅, ∅, Finset.Subset.refl _, ∅⟩
-  start_admissible := rfl
-  next _ := 0
-  step h _ := h
-  step_admissible _ _ hh := hh
-  step_extends h _ := MacroHistory.Extends.refl h
-  next_notMem_occupied h hh := by rw [hh]; exact Finset.notMem_empty 0
-
-theorem trivialSetup_stepBound (d : ℕ) (q : Site d → unitInterval) :
-    (trivialSetup d q).StepBound 0 := by
-  intro h _ m _
-  have h1 : h.prob (trivialSetup d q).density ((trivialSetup d q).joined m) = 1 := by
-    rw [MacroHistory.prob_eq]
-    exact pinnedProb_univ _ _ _
-  rw [h1, sub_zero]
-
-/-- **`ReachTransfer` is not implied by the one-step contract.**  For the setup above the formal
-reach probability of "at least one block occupied in one step" is `1`, while the configuration event
-it is compared with is empty, whatever graph, root, density and cell family are chosen — here the
-cells are taken empty. -/
-theorem not_reachTransfer (d : ℕ) (G : SimpleGraph (Site d)) (x : Site d)
-    (p : unitInterval) (q : Site d → unitInterval) :
-    ¬ ReachTransfer G x p (fun _ : (trivialSetup d q).Index => (∅ : Set (Site d)))
-      ((trivialSetup d q).exploration (by norm_num : (0 : ℝ) ≤ 1)
-        (trivialSetup_stepBound d q)) id := by
-  intro hT
-  have hsp : ∀ w : List Bool, (trivialSetup d q).stepProb w = 1 := by
-    intro w
-    show ((trivialSetup d q).hist w).prob (trivialSetup d q).density Set.univ = 1
-    rw [MacroHistory.prob_eq]
-    exact pinnedProb_univ _ _ _
-  have hreach : ((trivialSetup d q).exploration (by norm_num : (0 : ℝ) ≤ 1)
-      (trivialSetup_stepBound d q)).reachProb (reachesSize 1) 1 = 1 := by
-    rw [Exploration.reachProb, walkProb_succ]
-    simp only [MacroSetup.exploration_succProb, hsp, walkProb_zero, List.nil_append]
-    norm_num [reachesSize, numJoined]
-  have hempty : {ω : SiteConfig (Site d) |
-      ∃ (occ : Finset (trivialSetup d q).Index) (rep : (trivialSetup d q).Index → Site d),
-        1 ≤ occ.card ∧ (∀ m ∈ occ, rep m ∈ (∅ : Set (Site d))) ∧
-          (∀ m ∈ occ, rep m ∈ siteCluster G ω x)} = ∅ := by
-    ext ω
-    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_exists]
-    rintro occ rep ⟨hcard, hcell, -⟩
-    obtain ⟨m, hm⟩ := Finset.card_pos.1 hcard
-    exact hcell m hm
-  have h1 := hT 1
-  simp only [id_eq, hreach, hempty, measureReal_empty] at h1
-  linarith
-
 end KNAll.Site
 
 end
@@ -1114,5 +1031,4 @@ open KNAll.Site
 #print axioms KNAll.Site.SiteWalk.bernoulliReachProb_le_prob_run
 #print axioms KNAll.Site.SiteWalk.thetaSiteOn_pos
 #print axioms KNAll.Site.SiteWalk.siteWalkOfInjection_transfer
-#print axioms KNAll.Site.not_reachTransfer
 end AxiomCheck

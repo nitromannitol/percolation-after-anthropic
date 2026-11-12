@@ -79,8 +79,7 @@ theorem measurableSet_wideLongBoxEvent (C : LeftImp2.Certificate2 d)
   (determinedBy_wideLongBoxEvent C r t y).measurableSet_of_finset
 
 /-- The finite cylinder which must be added to the certificate for each of the four directions.
-Unlike the refuted pinned experiments, its source is the whole entry face, not one designated
-fresh site. -/
+Its source is the whole entry face, not one designated fresh site. -/
 def wideLongBoxExperiment (C : LeftImp2.Certificate2 d) (r t : ℕ) (y : Site 2) :
     CylinderExperiment d where
   support := E d r t 0 y

@@ -20,7 +20,7 @@ Certificate2.WellFormed.wideLongBox_mem
 and it mentions neither `MacroExp.src`, nor `MacroExp.Good`, nor any premise of the form
 `src ∈ openSites`.  Its source is the recorded origin, its entrance is the whole face
 `InitEnt.entryFace`, and the wide long-box experiment is itself the certificate entry.  Its
-independence from the retired fixed-tip theorems is therefore structural: the only inputs after
+independence from any fixed-tip premise is therefore structural: the only inputs after
 fixing `d` are `3 ≤ d`, `C.WellFormed` and `C.ValidAt2 q`.
 
 The `example` at the end of this file is the machine-checked statement that

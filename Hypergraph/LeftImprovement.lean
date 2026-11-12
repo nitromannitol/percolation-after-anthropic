@@ -3,12 +3,7 @@ import Hypergraph.GateTwoChain
 /-!
 # A concrete certificate for the below-parameter route
 
-`KN/CertificateRefutation.lean` shows that `CertificateSoundness d` of `KN/RenormData.lean` is false:
-`RenormData` allows `numBounds = 0`, whose `ValidAt` is vacuous at every parameter, including `q = 0`
-where nothing percolates.  The interface quantified over every conceivable certificate, and one of
-them was empty.
-
-This module rebuilds the interface around a certificate that extraction actually produces, so that
+This module builds the interface around a certificate that extraction actually produces, so that
 soundness is a statement about that certificate and not about every list of real numbers.
 
 * `Certificate d` carries the scales chosen at the supercritical parameter, a comparison density for
@@ -149,8 +144,7 @@ structure Certificate.WellFormed (C : Certificate d) : Prop where
   coalescence_mem : ∀ x ∈ box d C.source, ∀ y ∈ box d C.source,
     (coalescenceExperiment d C.sphere C.coalTarget x y, 1 - C.coalTol) ∈ C.bounds
 
-/-- A certificate with no bounds is not well-formed: the construction of
-`KN/CertificateRefutation.lean` cannot recur. -/
+/-- A certificate with no bounds is not well-formed. -/
 theorem Certificate.not_wellFormed_of_bounds_eq_nil {C : Certificate d} (h : C.bounds = []) :
     ¬ C.WellFormed :=
   fun hwf => hwf.bounds_ne_nil h
@@ -200,8 +194,7 @@ theorem Certificate.not_validAt_zero [NeZero d] {C : Certificate d} (hC : C.Well
     ¬ C.ValidAt 0 :=
   C.not_validAt_of_coe_eq_zero hC rfl
 
-/-- The argument of `KN/CertificateRefutation.lean` has no purchase here: there is no well-formed
-certificate valid at `0`. -/
+/-- There is no well-formed certificate valid at `0`. -/
 theorem not_exists_wellFormed_validAt_zero [NeZero d] :
     ¬ ∃ C : Certificate d, C.WellFormed ∧ C.ValidAt 0 :=
   fun ⟨_, hwf, hv⟩ => Certificate.not_validAt_zero hwf hv
@@ -448,7 +441,7 @@ theorem exists_wellFormed (d : ℕ) [NeZero d] (hd : 2 ≤ d) : ∃ C : Certific
 /-- **The geometric input.**  A well-formed certificate valid at `q` forces percolation in the slab
 of its width at `q`.  This is the only proposition below that is not proved.
 
-It is not the old `CertificateSoundness`: the certificate is well-formed, so its list contains the
+The certificate is well-formed, so its list contains the
 face-hitting experiment and every coalescence experiment of its source box at thresholds within the
 budget of a comparison density that percolates on the plane, and
 `Certificate.not_validAt_zero` shows that validity fails at `q = 0`.  For `d = 2` the slab is a

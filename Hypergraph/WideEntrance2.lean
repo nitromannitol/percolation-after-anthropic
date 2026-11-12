@@ -26,9 +26,8 @@ the origin, which is stated in `KN/SourceEstimate.lean` and is assumed, not prov
 
 The wide events here are existential over a finite set `F`.  That is exactly why they escape the
 one-site cap of `PinEnt.forcedCorridorExperiment_prob_le`.  The advantage survives only while the
-source stays existential: replacing `∃ g ∈ F` by an equation `g = MacroExp.src ...` reinstates the
-deleted stub condition, and `math/RECORDED_OPEN_ENTRY.md` §2 refutes that condition at reachable
-good transcripts.
+source stays existential: replacing `∃ g ∈ F` by an equation `g = MacroExp.src ...` makes the event a
+single-site event, capped by the site density.
 
 What is still missing at an accepting macro step is the geometric data, not this arithmetic: a
 large recorded set on the tail face of the newly accepted vertex, an assignment of its members to

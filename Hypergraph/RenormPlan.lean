@@ -29,8 +29,7 @@ strict inequalities between real numbers, each side of each inequality Lipschitz
 it survives a small enough shift.  Were a percolation statement allowed inside `ValidAt`, the
 stability theorem would be either circular or empty.
 
-`RenormPlan.toRenormData` forgets the pointers, so `siteCriticality_of_certificate` applies to a plan
-with no change to the endgame.
+`RenormPlan.toRenormData` forgets the pointers, so a plan can be read as a certificate.
 -/
 
 noncomputable section
@@ -307,9 +306,8 @@ theorem RenormPlan.exists_valid_nhds (C : RenormPlan d) {p : unitInterval} (h : 
 
 /-! ## The bridge to the existing endgame
 
-Forgetting the pointers turns a plan into a certificate with the same estimates, so the two geometric
-propositions of `KN/RenormData.lean` and the capstone `siteCriticality_of_certificate` apply to plans
-with no change.
+Forgetting the pointers turns a plan into a certificate with the same estimates, so statements about
+certificates apply to plans with no change.
 -/
 
 /-- The certificate underlying a plan: the same estimates, with the pointers and the boxes dropped. -/
@@ -327,13 +325,6 @@ def RenormPlan.toRenormData (C : RenormPlan d) : RenormData d where
 theorem RenormPlan.toRenormData_validAt_iff (C : RenormPlan d) (q : unitInterval) :
     C.toRenormData.ValidAt q ↔ C.ValidAt q := Iff.rfl
 
-/-- **Soundness applies to plans.**  A plan valid at `q` forces percolation in its slab at `q`, given
-the geometric input already stated for certificates. -/
-theorem RenormPlan.thetaSiteOn_pos_of_validAt [NeZero d] (hsound : CertificateSoundness d)
-    (C : RenormPlan d) (q : unitInterval) (h : C.ValidAt q) :
-    0 < thetaSiteOn (slabGraph d C.slabWidth) (slabOrigin d C.slabWidth) q :=
-  hsound C.toRenormData q h
-
 /-- **The geometric input in the language of plans.**  Percolation at a parameter strictly inside the
 unit interval yields a well-formed plan valid there. -/
 def PlanExtraction (d : ℕ) [NeZero d] : Prop :=
@@ -345,12 +336,6 @@ theorem certificateExtraction_of_planExtraction (d : ℕ) [NeZero d] (h : PlanEx
   intro p hp0 hp1 hpos
   obtain ⟨C, -, hC⟩ := h p hp0 hp1 hpos
   exact ⟨C.toRenormData, hC⟩
-
-/-- **The capstone, read through plans.**  Extraction of a well-formed plan and soundness of
-certificates give the critical statement, by way of the certificate the plan carries. -/
-theorem siteCriticality_of_plan (d : ℕ) [NeZero d] (hd : 2 ≤ d) (hex : PlanExtraction d)
-    (hsound : CertificateSoundness d) : SiteCriticality d :=
-  siteCriticality_of_certificate d hd (certificateExtraction_of_planExtraction d hex) hsound
 
 /-! ## Plans made of confined connections
 

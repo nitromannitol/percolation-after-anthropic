@@ -38,15 +38,14 @@ mentions `MacroExp.src`.
 
 A designated single fresh site as source caps the probability of the event by the site density:
 `Entrance.entranceExperiment_prob_le` and `PinEnt.forcedCorridorExperiment_prob_le` prove exactly
-that, and `PinEnt.not_pinnedEntranceBound_of_q_le` turns the cap into an impossibility at every
-`q ≤ 1 - C.eps / 8`.  The origin escapes the cap because it is *recorded* open, which is
+that, and `PinEnt.threshold_lt_q_of_pinnedEntranceBound` turns the cap into the requirement
+`1 - C.eps / 8 < q`.  The origin escapes the cap because it is *recorded* open, which is
 `origin_mem_openSites` below: a consequence of `MacroExp.Good.cert` at the macro vertex `0`, not
 an extra assumption and not an observation of an unread coordinate.
 
-For the same reason no theorem here, and none downstream, may replace the existential source of a
-wide entrance event by the equation `g = MacroExp.src ...`.  That is the deleted one-site stub
-condition under another name, and `math/RECORDED_OPEN_ENTRY.md` §2 exhibits a reachable,
-positive-probability good transcript at which `MacroExp.src d r n h ∉ h.openSites`.
+For the same reason the source of a wide entrance event stays existential and is never replaced
+by the equation `g = MacroExp.src ...`: at a reachable, positive-probability good transcript
+`MacroExp.src d r n h ∉ h.openSites` is possible.
 
 ## Satisfiability
 

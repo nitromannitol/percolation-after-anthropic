@@ -10,9 +10,7 @@ import Hypergraph.CorridorFreshness
 neighbour it is a single estimate, made immediately after the incoming edge has been exposed, for
 reaching the deepest of the concentric `Corridor.Dbox` family around that neighbour: it exposes no
 outgoing stub, it does not stop at a first good level, and it does not say that *some* level is
-good.  `KN/LevelBoundOpus.lean` and `KN/LevelBound2.lean` record why the requested `ρ/16` estimate
-for that event does not follow; `LevelOpus.not_hDirectionalNoCover` refutes it outright once
-`MacroExp.Good.cover` is dropped.
+good.
 
 This file builds the corrected event and proves the bound for it.
 
@@ -57,12 +55,10 @@ This file builds the corrected event and proves the bound for it.
   the position of the origin follow from `MacroExp.Good.inspected_thin` and the freshness of
   `E z y`, and the corridor target sits inside `M y`.
 
-## The three recurring refutations
+## Three points of the construction
 
 *No designated open site.*  The crossing targets are whole faces and the reservation target is the
 whole box `M y`; a first-hit site is produced by the crossing lemma, never demanded in advance.
-This is what `AsmVac.not_hstub` and `PinnedEntrance.not_pinnedEntranceBound_of_q_le` refute, and
-neither applies here.
 
 *No empty target.*  `stubFace_nonempty` and `stubTarget_nonempty` exhibit the axial sites
 `c + σ(5r + a)eᵢ` and `c + 20 r σ eᵢ`; `stubTarget_subset_M` puts the corridor target inside
@@ -101,9 +97,7 @@ never invoked to carry an estimate across a read that overlaps the tested suppor
    the tower step conditions on the actual revealed set; no invariance claim is made or needed.
    The note's requirement that earlier stubs stay disjoint from the fresh subbox of (7.10) is
    inherited by input (7.11).
-5. **Section 6 is not reproved.**  Its role is to refute the old obligation, which
-   `LevelBound2.lean` and `LevelOpus.not_hDirectionalNoCover` already do inside this tree.
-6. **The `FRDom.Exploration` interface still has no stopped transition.**  Nothing in
+5. **The `FRDom.Exploration` interface still has no stopped transition.**  Nothing in
    `MacroExp.Tr` or `MacroExp.Good` has to change — the substeps above are ordinary steps at an
    occupied macro-vertex — but `FRDom.Exploration.region` is configuration-independent and its one
    transition both reads and commits, so an implementation of `MacroExp.StepBound` still needs a

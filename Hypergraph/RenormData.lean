@@ -63,11 +63,6 @@ def CertificateExtraction (d : ℕ) [NeZero d] : Prop :=
   ∀ p : unitInterval, 0 < (p : ℝ) → (p : ℝ) < 1 → 0 < thetaSite d p →
     ∃ C : RenormData d, C.ValidAt p
 
-/-- **The geometric input, second half.**  A valid certificate forces percolation in its slab. -/
-def CertificateSoundness (d : ℕ) [NeZero d] : Prop :=
-  ∀ (C : RenormData d) (q : unitInterval), C.ValidAt q →
-    0 < thetaSiteOn (slabGraph d C.slabWidth) (slabOrigin d C.slabWidth) q
-
 end KNAll.Site
 
 end

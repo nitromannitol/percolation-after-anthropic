@@ -39,12 +39,6 @@ measure gives probability zero.  Every probability below is of this kind; none i
 * `MacroSetup.exploration` builds a `KN.Exploration` out of the history type, and
   `MacroSetup.le_reachProb_of_le_bernoulli` feeds it to `KN.Exploration.le_reachProb_of_le_bernoulli`.
   This is the one place where the one-step contract is actually consumed.
-* `thetaSiteOn_pos_of_reachTransfer` combines that with `thetaSiteOn_pos_of_cells`, and
-  `thetaSiteOn_pos_of_reachTransfer_comap` is the form the slab uses, where the cells are the traces
-  of the blocks.  Both carry one further hypothesis, `ReachTransfer`.  `KN.walkProb` is a formal
-  recursion on Boolean words, not a measure on configurations, and nothing in the development
-  identifies the two; the coupling that does is a separate workstream, so it appears here as a named
-  hypothesis rather than as a proof.
 -/
 
 noncomputable section
@@ -446,61 +440,6 @@ theorem exists_exploration_le_reachProb (hgl : PinnedSiteGluing) {rho c : ℝ} (
       c ≤ (S.exploration hrho hS).reachProb (reachesSize k) n := by
   obtain ⟨S, hS⟩ := hM hgl
   exact ⟨S, hS, S.le_reachProb_reachesSize hrho hS k n hc⟩
-
-/-! ## Target 5: an infinite cluster in the slab
-
-`thetaSiteOn_pos_of_cells` needs a lower bound, uniform in `n`, on the *measure* of the event that
-`n` disjoint cells each contribute a site of the cluster of `x`.  What the exploration provides is a
-lower bound on `KN.Exploration.reachProb`, which is a formal recursion on Boolean words.  Nothing in
-the development identifies the two, and the coupling that would is not built here, so it appears as
-the named hypothesis `ReachTransfer`. -/
-
-/-- **The bridge from words to configurations.**  A run of `steps k` steps that declares `k` blocks
-occupied is witnessed, in the product measure, by `k` cells each contributing a site of the cluster
-of `x`.
-
-REFUTED.  This does not follow from the one-step contract, and `MacroSetup` is too weak to make it
-true: the structure has no field relating `joined`, `step`, `occupied` and the configuration, so the
-word a run produces is tied to nothing the measure sees.  `KNAll.Site.not_reachTransfer` of
-`KN/ReachCoupling.lean` exhibits a `MacroSetup` satisfying every field and the full
-`MacroSetup.StepBound 0` whose exploration reaches size one with probability one while the
-corresponding configuration event is empty.  The definition is kept only so that the refutation can
-be stated.  The correct statement is `KNAll.Site.SiteWalk.bernoulliReachProb_le_prob_run`, whose
-transcript is a genuine function of the configuration; use that instead. -/
-def ReachTransfer {V M : Type*} {a : ℝ} (G : SimpleGraph V) (x : V) (p : unitInterval)
-    (cell : M → Set V) (E : Exploration M a) (steps : ℕ → ℕ) : Prop :=
-  ∀ k : ℕ, E.reachProb (reachesSize k) (steps k) ≤
-    (siteBernoulli (fun _ : V => p)).real
-      {ω | ∃ (occ : Finset M) (rep : M → V), k ≤ occ.card ∧
-            (∀ m ∈ occ, rep m ∈ cell m) ∧ (∀ m ∈ occ, rep m ∈ siteCluster G ω x)}
-
-/-- **Target 5.**  The one-step contract, a Bernoulli(`1 - rho`) lower bound uniform in the target
-size, and the transfer, together give an infinite open cluster at `x`.
-
-Read on the slab graph, with `cell` the trace of the blocks on the slab, this is the conclusion the
-renormalisation is aimed at.  The hypothesis `hbern` is percolation of the coarse lattice at density
-`1 - rho`, in the word form the comparison produces: whatever size is asked for, some number of steps
-attains it with probability at least `c`. -/
-theorem thetaSiteOn_pos_of_reachTransfer {V : Type*} [Countable V] (S : MacroSetup d)
-    (G : SimpleGraph V) (x : V) (p : unitInterval) (cell : S.Index → Set V)
-    (hdisj : ∀ m m' : S.Index, m ≠ m' → Disjoint (cell m) (cell m'))
-    {rho c : ℝ} (hrho : rho ≤ 1) (hS : S.StepBound rho) (hc : 0 < c) (steps : ℕ → ℕ)
-    (hbern : ∀ k : ℕ, c ≤ bernoulliReachProb (1 - rho) (reachesSize k) (steps k))
-    (htrans : ReachTransfer G x p cell (S.exploration hrho hS) steps) :
-    0 < thetaSiteOn G x p := by
-  refine thetaSiteOn_pos_of_cells G x p cell hdisj c hc fun k => ?_
-  exact (S.le_reachProb_reachesSize hrho hS k (steps k) (hbern k)).trans (htrans k)
-
-/-- **Target 5 with the cells supplied by the setup.**  The cells are the traces of the blocks under
-a map `f` of the ambient vertex set into `ℤ^d`, the inclusion of the slab in the intended reading, so
-that their disjointness comes from `MacroSetup.block_disjoint` rather than being assumed. -/
-theorem thetaSiteOn_pos_of_reachTransfer_comap {V : Type*} [Countable V] (S : MacroSetup d)
-    (G : SimpleGraph V) (x : V) (p : unitInterval) (f : V → Site d)
-    {rho c : ℝ} (hrho : rho ≤ 1) (hS : S.StepBound rho) (hc : 0 < c) (steps : ℕ → ℕ)
-    (hbern : ∀ k : ℕ, c ≤ bernoulliReachProb (1 - rho) (reachesSize k) (steps k))
-    (htrans : ReachTransfer G x p (fun m => f ⁻¹' S.block m) (S.exploration hrho hS) steps) :
-    0 < thetaSiteOn G x p :=
-  thetaSiteOn_pos_of_reachTransfer S G x p _ (S.disjoint_comap_block f) hrho hS hc steps hbern htrans
 
 end KNAll.Site
 

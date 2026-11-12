@@ -11,18 +11,12 @@ the fresh corridor, not the already inspected source.  That comparison,
 `forcedSourceExperiment_prob_le_prob`, is proved here for an arbitrary recorded-open source and is
 the honest export of this file.
 
-**What this file no longer claims.**  Two theorems used to conclude a source estimate at the
-designated tip `MacroExp.src d r n h` from the premise `hopen : src d r n h ∈ h.openSites`.  That
-premise is refuted at reachable good transcripts by `math/RECORDED_OPEN_ENTRY.md` §2, whose
-counterexample is cut out by a positive-probability cylinder.  Both are retired; the retirement
-note near the end of this file names them.
-
 **Why a designated tip cannot be the source.**  The tip has exactly one neighbour in its outgoing
 edge region, namely `tipOut`.  Even the source-opened experiment therefore forces that one fresh
 site open, so its product probability is at most `q` by `forcedCorridorExperiment_prob_le`, and
-`not_pinnedEntranceBound_of_q_le` turns this into an outright impossibility at every
-`q ≤ 1 - C.eps / 8`.  Chaining face and coalescence experiments farther down the corridor cannot
-remove this first fresh-coordinate bottleneck.
+`threshold_lt_q_of_pinnedEntranceBound` turns this into the requirement `1 - C.eps / 8 < q`.
+Chaining face and coalescence experiments farther down the corridor cannot remove this first
+fresh-coordinate bottleneck.
 
 **What is assumed now, and where it must be discharged.**  The source estimate is an explicit
 interface with the recorded origin as its source: `RecordedEntry.OriginSourceEstimate` in
@@ -328,11 +322,9 @@ theorem pinnedEntranceExperiment_prob_le (hd : 2 ≤ d) (C : LeftImp2.Certificat
   exact forcedCorridorExperiment_prob_le hd r t hwz
     (Finset.coe_subset.2 (innerBox_subset_E hd C r t hr hwz hcorr hhalf)) q
 
-/-- The explicit missing hypothesis one would have to add to the certificate interface.  Unlike
-the rejected clause from `KN/EntranceBound.lean`, this event opens the already pinned source before
-testing connectivity, and its finite support is entirely fresh.
-
-It is still not a viable clause at general `q`, as `not_pinnedEntranceBound_of_q_le` below shows. -/
+/-- The explicit missing hypothesis one would have to add to the certificate interface.  This event
+opens the already pinned source before testing connectivity, and its finite support is entirely
+fresh. -/
 def PinnedEntranceBound (C : LeftImp2.Certificate2 d) (q : unitInterval) (r t : ℕ) : Prop :=
   ∀ w z : Site 2, (zdGraph 2).Adj w z →
     1 - C.eps / 8 < (pinnedEntranceExperiment C r t w z).prob q
@@ -347,44 +339,14 @@ theorem threshold_lt_q_of_pinnedEntranceBound (hd : 2 ≤ d)
   (hbound w z hwz).trans_le
     (pinnedEntranceExperiment_prob_le hd C r t hr hwz hcorr hhalf q)
 
-/-- **Machine-checked impossibility.**  If `q` is at or below the requested threshold, the named
-source-opened entrance bound is false, despite the source itself being opened for free. -/
-theorem not_pinnedEntranceBound_of_q_le (hd : 2 ≤ d)
-    {C : LeftImp2.Certificate2 d} {q : unitInterval} {r t : ℕ} (hr : 0 < r)
-    (hcorr : C.corridor ≤ 5 * r) (hhalf : C.halfWidth ≤ t)
-    (hq : (q : ℝ) ≤ 1 - C.eps / 8) :
-    ¬ PinnedEntranceBound C q r t := by
-  intro hbound
-  let w : Site 2 := 0
-  let z : Site 2 := Pi.single 0 1
-  have hwz : (zdGraph 2).Adj w z := by
-    rw [zdGraph_adj_iff]
-    exact ⟨0, Or.inl (by simp [w, z])⟩
-  exact (not_lt_of_ge hq)
-    (threshold_lt_q_of_pinnedEntranceBound hd hr hcorr hhalf hbound hwz)
-
 /-! ## What can be concluded at a good transcript
 
-**Two fixed-source theorems have been retired from this section:**
-
-```
-lt_prob_src_connWithinSet_of_forcedBound
-lt_prob_src_connWithinSet_innerBox_of_pinnedEntranceBound
-```
-
-Each concluded a source estimate whose source was the designated tip `MacroExp.src d r n h`, from
-the premise `hopen : MacroExp.src d r n h ∈ h.openSites`.  That premise is false at reachable good
-transcripts: `math/RECORDED_OPEN_ENTRY.md` §2 exhibits a positive-probability cylinder whose
-transcript is good, non-terminal and reachable by `MacroExp.run`, and at which the designated tip
-had been inspected closed.  A repository-wide name search found no reference to either name
-outside this file, so retiring them severs no proof.
-
-What survives is the generic transfer below, parameterized by an arbitrary source that the
-transcript records open.  It is the correct measure-theoretic reduction and nothing more: the
-source-opened corridor bound it consumes is itself impossible at a designated tip, by
-`not_pinnedEntranceBound_of_q_le` above, because the tip has exactly one neighbour in its outgoing
-region.  The source used by the downstream interface is instead the recorded origin
-`MacroExp.emb 0`; see `RecordedEntry.OriginSourceEstimate` in `KN/SourceEstimate.lean`. -/
+The generic transfer below is parameterized by an arbitrary source that the transcript records
+open.  It is the measure-theoretic reduction and nothing more: the source-opened corridor bound it
+consumes is capped by `q` at a designated tip (`threshold_lt_q_of_pinnedEntranceBound`), because
+the tip has exactly one neighbour in its outgoing region.  The source used by the downstream
+interface is instead the recorded origin `MacroExp.emb 0`; see `RecordedEntry.OriginSourceEstimate`
+in `KN/SourceEstimate.lean`. -/
 
 /-- **The generic forced-source transfer.**  For a fresh region and a source that the transcript
 records open, a source-opened ordinary cylinder bound gives the corresponding source estimate
@@ -404,7 +366,6 @@ theorem sourceEstimate_of_forcedBound
 #print axioms KNAll.Site.PinEnt.forcedCorridorExperiment_prob_le
 #print axioms KNAll.Site.PinEnt.threshold_lt_q_of_forcedCorridorBound
 #print axioms KNAll.Site.PinEnt.pinnedEntranceExperiment_prob_le
-#print axioms KNAll.Site.PinEnt.not_pinnedEntranceBound_of_q_le
 #print axioms KNAll.Site.PinEnt.sourceEstimate_of_forcedBound
 
 end KNAll.Site.PinEnt

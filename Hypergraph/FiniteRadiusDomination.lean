@@ -24,9 +24,7 @@ whose successes certify a connection to the root cannot have a one-step bound be
 trivial one, because the transcript reached by running it against the all-closed configuration
 records the root closed and every later success has pinned probability zero.  Here the exploration
 stops at such a transcript, since its frontier is empty, and the one-step bound is demanded only at
-admissible transcripts that are not terminal.  `KN/ReachCoupling.lean` proves `not_reachTransfer`
-and documents why a comparison read off Boolean words cannot see a transcript that depends on the
-configuration.  Here nothing is read off words: the comparison is between two pinned probabilities
+admissible transcripts that are not terminal.  Nothing is read off Boolean words: the comparison is between two pinned probabilities
 of configuration events, and the conditional-independence calculus that survives from that file,
 `pinnedProb_split` and the tower inequality, is all that is used of it.
 

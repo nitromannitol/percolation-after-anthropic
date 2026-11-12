@@ -1,10 +1,10 @@
 import Hypergraph.RenormData
 
 /-!
-# Certificates are stable, and that is the whole below-parameter route
+# Stability of a certificate
 
 A certificate is a finite list of cylinder events, each holding at the parameter `p` with strict
-slack.  Three steps carry that to a statement about the critical parameter.
+slack.  Two facts are proved about it.
 
 * `CylinderExperiment.abs_prob_sub_le` — the probability of one cylinder event moves by at most
   `card support` times the parameter shift.  This is `prodBernoulli_real_lipschitz` read at the
@@ -17,13 +17,6 @@ slack.  Three steps carry that to a statement about the critical parameter.
   `+ 1` in the denominator keeps the quotient meaningful when the support is empty, and the
   minimum over the bounds is taken with `Finset.inf'`, whose nonemptiness hypothesis is why the
   case of no bounds, where the conclusion is vacuous, is treated separately.
-* `siteSlabReductionBelow_of_certificate` — given percolation at `p`, extract a certificate, take
-  the radius `ε` on which it stays valid, and evaluate at `q = p - min (ε/2) (p/2)`, which is both
-  a point of the unit interval and strictly below `p`.  Soundness of the certificate turns validity
-  at `q` into percolation in a slab at `q`, which is exactly `SiteSlabReductionBelow`.
-
-`siteCriticality_of_slabReductionBelow'` then closes the argument, so `SiteCriticality d` follows
-from the two geometric propositions `CertificateExtraction d` and `CertificateSoundness d` alone.
 -/
 
 noncomputable section
@@ -95,40 +88,6 @@ theorem RenormData.exists_valid_nhds (C : RenormData d) {p : unitInterval} (h : 
         field_simp
       rw [hval] at key
       linarith
-
-/-! ## The assembly -/
-
-/-- **The below-parameter reduction from the two geometric inputs.**  Percolation at `p` yields a
-certificate valid at `p`; the certificate stays valid on a neighbourhood of `p`, which contains
-parameters strictly below `p`; and a valid certificate forces percolation in its slab. -/
-theorem siteSlabReductionBelow_of_certificate (d : ℕ) [NeZero d]
-    (hex : CertificateExtraction d) (hsound : CertificateSoundness d) :
-    SiteSlabReductionBelow d := by
-  intro p hp0 hp1 hpos
-  obtain ⟨C, hC⟩ := hex p hp0 hp1 hpos
-  obtain ⟨ε, hε, hnhds⟩ := C.exists_valid_nhds hC
-  obtain ⟨t, ht0, htε, htp⟩ : ∃ t : ℝ, 0 < t ∧ t ≤ ε / 2 ∧ t ≤ (p : ℝ) / 2 :=
-    ⟨min (ε / 2) ((p : ℝ) / 2), lt_min (by linarith) (by linarith),
-      min_le_left _ _, min_le_right _ _⟩
-  have hp1' : (p : ℝ) ≤ 1 := p.2.2
-  have hq0 : (0 : ℝ) ≤ (p : ℝ) - t := by linarith
-  have hq1 : (p : ℝ) - t ≤ 1 := by linarith
-  refine ⟨C.slabWidth, ⟨(p : ℝ) - t, Set.mem_Icc.2 ⟨hq0, hq1⟩⟩, ?_, ?_⟩
-  · show (p : ℝ) - t < (p : ℝ)
-    linarith
-  · refine hsound C _ ?_
-    refine hnhds _ ?_
-    show |((p : ℝ) - t) - (p : ℝ)| < ε
-    have hrw : ((p : ℝ) - t) - (p : ℝ) = -t := by ring
-    rw [hrw, abs_neg, abs_of_pos ht0]
-    linarith
-
-/-- **The capstone.**  From the two geometric propositions of `KN/RenormData.lean` alone, site
-percolation on `ℤ^d` has no infinite cluster at its critical parameter.  No theorem about
-percolation at a critical point, and no half-space or slab criticality statement, is used. -/
-theorem siteCriticality_of_certificate (d : ℕ) [NeZero d] (hd : 2 ≤ d)
-    (hex : CertificateExtraction d) (hsound : CertificateSoundness d) : SiteCriticality d :=
-  siteCriticality_of_slabReductionBelow' d hd (siteSlabReductionBelow_of_certificate d hex hsound)
 
 end KNAll.Site
 

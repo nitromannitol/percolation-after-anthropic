@@ -1105,13 +1105,12 @@ theorem postWindow_loss_eq {C : LeftImp2.Certificate2 d} (hwf : C.WellFormed) :
   rw [hwf.delta_eq]
 
 /-!
-## Regression audit
+## Checks of the construction
 
 1. **No designated open site.** `postWindowEvent` asks for a nonempty finite set of crossing
    endpoints and `relayChoice` selects one after seeing the shell.  `tailWindow_nonempty` exhibits
-   an all-open witness; no fixed unread site's state is imposed.  Thus neither the single-tip nor
-   widened-tip refutation applies: the target in `toTarget` is the actual whole `stubTarget`, not a
-   singleton and not the outward face of `Q z'`.
+   an all-open witness; no fixed unread site's state is imposed.  Thus the target in `toTarget` is the
+   actual whole `stubTarget`, not a singleton and not the outward face of `Q z'`.
 2. **No empty or unreachable target.** `stopped_targets_nonempty` uses
    `Stopped.stubFace_nonempty` and `targetAnchor_mem_stubTarget`; its second conjunct proves that
    the concrete target anchor at signed depth `18*r` also lies in every used `tailO`.  The two

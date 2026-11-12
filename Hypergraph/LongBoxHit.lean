@@ -9,12 +9,6 @@ pinned law of a transcript.  Every vertex of a pending edge region is fresh, so 
 finite cylinder event obtained by forcing a *recorded-open* source open transfers verbatim
 (`entranceExperiment_prob_le_prob`).
 
-**What this file no longer claims.**  Three theorems used to conclude the pending-edge source
-estimate at the designated tip `MacroExp.src d r n h`, from the premise
-`hopen : src d r n h ∈ h.openSites`.  That premise is refuted at reachable good transcripts by
-`math/RECORDED_OPEN_ENTRY.md` §2, whose counterexample is cut out by a positive-probability
-cylinder.  All three are retired; the retirement note below names them.
-
 **What is assumed now, and where it must be discharged.**  The estimate is exposed as a name with
 the source a parameter, `InnerSourceEstimate`, and with the recorded origin as the intended
 instance, `InnerOriginSourceEstimate`.  No theorem here or elsewhere establishes it at a post-step
@@ -355,29 +349,6 @@ theorem innerBox_subset_Dbox (C : LeftImp2.Certificate2 d) (c : Site d) {i : ℕ
   simp only [ρI, ρO, ρD, scalesOf]
   push_cast
   omega
-
-/-! ### Retirement of the three fixed-source theorems
-
-**Three theorems have been retired from this section:**
-
-```
-lt_prob_src_connWithinSet_innerBox_of_cylinderBound
-lt_prob_src_connWithinSet_innerBox_of_recordedCylinders
-lt_prob_src_connWithinSet_innerBox_of_certificateClause
-```
-
-Each concluded the pending-edge source estimate from the designated tip `MacroExp.src d r n h` to
-`innerBox`, and each carried the premise `hopen : MacroExp.src d r n h ∈ h.openSites`.  That
-premise is false at reachable good transcripts: `math/RECORDED_OPEN_ENTRY.md` §2 exhibits a
-positive-probability cylinder whose transcript is good, non-terminal and reachable by
-`MacroExp.run`, and at which the designated tip had been inspected closed.  Neither `MacroExp.Good`
-nor reachability implies it, and an invariant that does implies the deleted one-site stub
-condition, which `Entrance.entranceExperiment_prob_le` caps by the site density.
-
-A repository-wide name search found no reference to any of the three outside this file, so
-retiring them severs no proof.  Everything they used is kept: `innerBox` and its containment
-geometry, the translation identities, `corridorExperiment`, and the generic transfer
-`entranceExperiment_prob_le_prob`, which takes an arbitrary recorded-open source. -/
 
 /-- **The pending-edge source estimate to the innermost box.**  A name for the premise, with the
 source `o` a parameter.  Nothing in this file establishes it at any source. -/

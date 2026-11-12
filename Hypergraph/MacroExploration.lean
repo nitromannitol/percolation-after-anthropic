@@ -472,7 +472,7 @@ theorem adj_tip_tipOut (hd : 2 ≤ d) (r : ℕ) {z z' : Site 2} (h : z' ∈ nbrs
 
 /-- **The corridor entrance lies in the corridor.**  So the tip left by an occupied macro-vertex is
 an inspected open site adjacent to the fresh region revealed at the next examination; this is
-exactly what the refuted design lacked. -/
+exactly what makes the entrance available. -/
 theorem tipOut_mem_E (hd : 2 ≤ d) (r t : ℕ) (hr : 0 < r) {z z' : Site 2} (h : z' ∈ nbrs z) :
     tipOut d r z z' ∈ E d r t z z' := by
   have hr1 : (1 : ℤ) ≤ r := by exact_mod_cast hr

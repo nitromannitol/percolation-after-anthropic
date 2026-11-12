@@ -3,9 +3,8 @@ import Hypergraph.CoreLiveCover
 /-!
 # A tagged cover for stopped core probes
 
-The old macro cover required every recorded corridor to have an open tail and a determined head.
-That is false during a stopped outgoing probe.  The replacement below separates settled edges
-from live reserved edges.  A live edge owns only `E(u,v) \ Q(v)`; its unread head box is reserved
+During a stopped outgoing probe, a recorded corridor need not yet have an open tail and a
+determined head.  The cover below separates settled edges from live reserved edges.  A live edge owns only `E(u,v) \ Q(v)`; its unread head box is reserved
 for the later examination of `v`.
 
 The main theorem proves the freshness fact needed to start a new-head probe: if `y` is genuinely
