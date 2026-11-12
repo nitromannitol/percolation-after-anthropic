@@ -41,7 +41,7 @@ theorem psiIso_eq_sdiff_nonempty (k : V) (K : Set V) :
     obtain ⟨u, huK, hu⟩ := Set.not_subset.1 hK
     exact ⟨u, huK, hu⟩
 
-/-- Global isotonicity of the repaired singleton-complement observable. -/
+/-- Global isotonicity of the singleton-complement observable. -/
 theorem corrected_fk_monotone (k : V) :
     Monotone (fun K : Set V ↦
       if (K \ ({k} : Set V)).Nonempty then (1 : ℝ) else 0) := by
@@ -480,8 +480,7 @@ theorem cshMargin_nonneg (H : Hypergraph V E)
           · exact hds_notin_pre e he h2
         exact ih ds' hlen' d Y' o v hdY' hoY' hvY' hov hndds hdis' h hh
 
-/-- The formerly open interior hierarchy is inhabited for every finite
-labelled hypergraph. -/
+/-- The interior hierarchy is inhabited for every finite labelled hypergraph. -/
 theorem hyperCSHInterior :
     KNAll.Site.HyperFixedFromCSH.HyperCSHInterior := by
   intro W L _ _ H hp x Y D o v hxY hox hvx hoY hvY hov hnd hdis

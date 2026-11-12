@@ -4,11 +4,11 @@ import Hypergraph.CoreDirectionNoGluing
 /-!
 # A core batch without pinned gluing
 
-`CoreBatchTransition.prob_batchFailure_le_of_postWindow` was written before the
-middle-box support in `PostFam.tailWindow` was used directly.  It therefore routes
-through the obsolete support-in-`D` proof and assumes `PinnedSiteGluing`.
+`CoreBatchTransition.prob_batchFailure_le_of_postWindow` routes through the support-in-`D`
+proof and assumes `PinnedSiteGluing`.
 
-The theorem below keeps the same honest batch interface but uses
+The theorem below has the same batch interface but uses the middle-box support in
+`PostFam.tailWindow` directly, through
 `CoreDirectionNoGluing.prob_directionFailure_le_of_postWindow`.  In particular,
 the finite target-aware window family and the face/long-box inputs remain visible;
 no correlation conjecture is hidden in the wrapper.

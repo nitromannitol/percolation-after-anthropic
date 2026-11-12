@@ -18,9 +18,8 @@ This calculation does not claim that the macro exploration has already been wide
 supplies is one arithmetic fact and its gateway consequence, and nothing about the transition
 relation.  Three points fix its scope.
 
-The current `MacroExp.succ` no longer names a source: its incoming clause asks for a connection
-from the recorded origin `MacroExp.emb 0` into the target box, and the deleted `Good.stub` field,
-which used to record one designated tip per pending direction, is gone.  The exploration therefore
+`MacroExp.succ` names no source: its incoming clause asks for a connection
+from the recorded origin `MacroExp.emb 0` into the target box.  The exploration therefore
 does not need widening at a *source*; it needs the estimate of `RecordedEntry.SourceEstimate` at
 the origin, which is stated in `KN/SourceEstimate.lean` and is assumed, not proved.
 

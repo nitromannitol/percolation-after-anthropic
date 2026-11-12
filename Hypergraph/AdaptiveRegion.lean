@@ -9,7 +9,7 @@ run a *bounded* sequence of reveal-only transitions.  The set read by one transi
 the current transcript, but later sets may therefore depend on the states found earlier.  After
 the bounded reveal phase there is exactly one commit, so terminal completeness is unchanged.
 
-The point at which the old interface used configuration-independence is the averaging of the two
+The fixed-region interface uses configuration-independence in the averaging of the two
 recursive branches in `FRDom.Exploration.bern_le_prob_run` (and the companion measurability
 induction).  On an atom of the fixed set `region h`, `Transcript.step_congr` freezes the successor
 transcript.  Here the same argument is iterated through a finite reveal tree.  The one-reveal

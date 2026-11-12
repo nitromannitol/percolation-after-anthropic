@@ -967,8 +967,8 @@ theorem pending_subset_of_subset {h h' : Tr d} {z : Site 2}
   rw [mem_pending] at hz' ⊢
   exact ⟨hz'.1, fun hc => hz'.2 (hsub hc)⟩
 
-/-- The old deterministic stub source.  It remains useful as a geometric point, but the corrected
-exploration does not demand a connection from it: doing so incurs an unavoidable factor `q`. -/
+/-- The deterministic stub source.  It is a geometric point only: the exploration does not demand
+a connection from it, since doing so incurs an unavoidable factor `q`. -/
 def src (h : Tr d) : Site d := tip d r (pendW d n h) (pendZ d n h)
 
 /-- The event protected by the directional reservation `z → y`.  The history already inspected is
