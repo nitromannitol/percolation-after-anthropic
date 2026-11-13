@@ -10,8 +10,7 @@ one extracts a *certificate*: a finite list of events, each depending on finitel
 holding at `p` with strict slack.  Because there are finitely many of them and each is a cylinder
 event, their probabilities are Lipschitz in the parameter, so the whole list still holds at every
 parameter close enough to `p`, in particular at some `q < p`.  A certificate that holds at `q` is
-built so as to force percolation in a slab at `q`.  Then `siteCriticality_of_slabReductionBelow'`
-finishes, with no theorem about percolation at a critical point anywhere in the argument.
+built so as to force percolation in a slab at `q`. 
 
 This module fixes the data and the two propositions that the geometric work has to supply.
 -/

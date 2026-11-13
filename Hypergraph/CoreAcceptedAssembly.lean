@@ -490,18 +490,11 @@ theorem success_lower_bound_of_windows
 abbrev start_admissible_of_initialCoreBounds :=
   @CoreAcceptedTransition.start_admissible_of_initialCoreBounds
 
-/-- Slab/certificate consumer for the exact admissibility-indexed bounded-damage exploration type
-constructed above. -/
-abbrev certificateSound2_of_acceptedAssembly :=
-  @CoreAdaptSound.certificateSound2_of_adaptive
-
 #print axioms KNAll.Site.CoreAcceptedAssembly.exploration
 #print axioms KNAll.Site.CoreAcceptedAssembly.stopsExtend
 #print axioms KNAll.Site.CoreAcceptedAssembly.exploration_success_eq_substitute_preimage_batchSuccess
 #print axioms KNAll.Site.CoreAcceptedAssembly.exploration_prob_success_eq_prob_batchSuccess
 #print axioms KNAll.Site.CoreAcceptedAssembly.success_lower_bound_of_windows
-#print axioms KNAll.Site.CoreAcceptedAssembly.certificateSound2_of_acceptedAssembly
-
 end KNAll.Site.CoreAcceptedAssembly
 
 end

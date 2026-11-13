@@ -1817,25 +1817,6 @@ theorem thetaSiteOn_slab_mono {k k' : ℕ} (hk : k ≤ k') (p : unitInterval) :
   have hsub : slab d k ⊆ slab d k' := fun x hx => ⟨hx.1, hx.2.trans (by exact_mod_cast hk)⟩
   exact thetaSiteOn_induce_mono (zdGraph d) hsub (0 : Site d) (zero_mem_slab d k) p
 
-/-- **The soundness of the certificate, conditionally on the one-step bound.**  If for every
-well-formed certificate valid at `q` there are a spacing `r`, a transverse half-width `t` with
-`2 t ≤ width`, and a planar density `a` with `θ_2(a) > 0` at which the one-step bound holds, then
-`CertificateSound d` holds for `d ≥ 3`.  The positivity of `q` is supplied by
-`Certificate.not_validAt_of_coe_eq_zero`. -/
-theorem certificateSound_of_stepBound (hd : 3 ≤ d)
-    (hs : ∀ (C : LeftImp.Certificate d) (q : unitInterval), C.WellFormed → C.ValidAt q →
-      ∃ (r t : ℕ) (a : unitInterval), 0 < r ∧ 2 * t ≤ C.width ∧ 0 < thetaSite 2 a ∧
-        StepBound d r t q a) :
-    LeftImp.CertificateSound d := by
-  intro C q hwf hv
-  obtain ⟨r, t, a, hr, ht, ha, hstep⟩ := hs C q hwf hv
-  have hq : 0 < (q : ℝ) := by
-    rcases lt_or_eq_of_le q.2.1 with hq | hq
-    · exact hq
-    · exact absurd hv (C.not_validAt_of_coe_eq_zero hwf hq.symm)
-  have hthin := thetaSiteOn_thin_pos_of_stepBound (r := r) (t := t) (by omega) hr q a hq ha hstep
-  exact lt_of_lt_of_le (slab_two_pos_of_thin hd t q hthin) (thetaSiteOn_slab_mono ht q)
-
 end Conclusion
 
 /-! ## The incoming reservation
@@ -2013,14 +1994,6 @@ example (d : ℕ) [NeZero d] (r t n : ℕ) (hd : 2 ≤ d) (hr : 0 < r)
 -- the target extension available for the one-step bound
 #check @KNAll.Site.TargetExt.targetExtension_eps
 
--- the certificate whose soundness is the target
-example (d : ℕ) [NeZero d] (hd : 3 ≤ d)
-    (hs : ∀ (C : Certificate d) (q : unitInterval), C.WellFormed → C.ValidAt q →
-      ∃ (r t : ℕ) (a : unitInterval), 0 < r ∧ 2 * t ≤ C.width ∧ 0 < thetaSite 2 a ∧
-        StepBound d r t q a) :
-    CertificateSound d :=
-  certificateSound_of_stepBound hd hs
-
 #print axioms KNAll.Site.MacroExp.macroExp
 #print axioms KNAll.Site.MacroExp.start_good
 #print axioms KNAll.Site.MacroExp.exists_far_of_reaches
@@ -2028,7 +2001,6 @@ example (d : ℕ) [NeZero d] (hd : 3 ≤ d)
 #print axioms KNAll.Site.MacroExp.thetaSiteOn_thin_pos_of_stepBound
 #print axioms KNAll.Site.MacroExp.exists_slab_pos_of_stepBound
 #print axioms KNAll.Site.MacroExp.slab_two_pos_of_thin
-#print axioms KNAll.Site.MacroExp.certificateSound_of_stepBound
 #print axioms KNAll.Site.MacroExp.incoming_reservation
 #print axioms KNAll.Site.MacroExp.incoming_reservation_region
 #print axioms KNAll.Site.MacroExp.tip_mem_Q

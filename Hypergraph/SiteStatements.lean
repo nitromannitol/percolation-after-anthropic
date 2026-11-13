@@ -481,30 +481,10 @@ If the reduction is strengthened so that percolation at `p` gives slab percolati
 strictly below `p`, the conclusion follows from the definition of the critical parameter alone.  No
 theorem about percolation at a critical point is used. -/
 
-/-- **The reduction with a strictly smaller parameter.**  Grimmett and Marstrand prove the version
-with `p + γ` in place of `q < p`, and identify the passage to a parameter that is not larger as the
-point where their sprinkling argument fails. -/
-def SiteSlabReductionBelow (d : ℕ) [NeZero d] : Prop :=
-  ∀ p : unitInterval, 0 < (p : ℝ) → (p : ℝ) < 1 → 0 < thetaSite d p →
-    ∃ (k : ℕ) (q : unitInterval), (q : ℝ) < (p : ℝ) ∧
-      0 < thetaSiteOn (slabGraph d k) (slabOrigin d k) q
-
 /-- Percolation in a slab forces percolation on the whole lattice at the same parameter. -/
 theorem thetaSiteOn_slab_le (d : ℕ) [NeZero d] (k : ℕ) (p : unitInterval) :
     thetaSiteOn (slabGraph d k) (slabOrigin d k) p ≤ thetaSite d p :=
   thetaSiteOn_comap_le (zdGraph d) Subtype.val_injective (slabOrigin d k) p
-
-/-- **Criticality from the strengthened reduction.**  The only other inputs are that the critical
-parameter is neither `0` nor `1`. -/
-theorem siteCriticality_of_slabReductionBelow (d : ℕ) [NeZero d]
-    (hpc0 : 0 < criticalProbSite d) (hpc1 : criticalProbSite d < 1)
-    (hred : SiteSlabReductionBelow d) : SiteCriticality d := by
-  by_contra hne
-  have hpos : 0 < thetaSite d (criticalProbSiteI d) :=
-    lt_of_le_of_ne (thetaSiteOn_nonneg _ _ _) (Ne.symm hne)
-  obtain ⟨k, q, hq, hqpos⟩ := hred (criticalProbSiteI d) hpc0 hpc1 hpos
-  exact absurd hq (not_lt.2 (criticalProbSite_le_of_pos d q
-    (lt_of_lt_of_le hqpos (thetaSiteOn_slab_le d k q))))
 
 /-! ### A note on the slab family
 

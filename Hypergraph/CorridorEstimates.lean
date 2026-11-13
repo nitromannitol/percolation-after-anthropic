@@ -35,8 +35,6 @@ one structure, `ShellWindow`, which isolates the hittable-geometry input of the 
   this at the recorded density.  The deterministic ordered-crossing condition that the level
   induction of `TargetExt.sum_real_survive_inter_poor_le` needs is the gate condition
   `Corridor.gate`, discharged here for the level family `levelOf`.
-* *The assembly*: `certificateSound2_of_stepBound`, from the one-step bound to
-  `LeftImp2.CertificateSound2`.
 
 ## What is assumed, and where
 
@@ -574,35 +572,6 @@ theorem density_le_prob_of_shellWindow
   linarith
 
 end Corridor
-
-/-! ## The assembly: from the one-step bound to the soundness of the certificate
-
-`KN/MacroExploration.lean` proves everything from `StepBound` onwards.  The only step it leaves to
-this module is the passage from its `CertificateSound` (for `LeftImp.Certificate`) to
-`LeftImp2.CertificateSound2` (for the certificate that records the corridor scales), and that is
-a rewording: the slab width of a `Certificate2` is `2 · halfWidth` by the clause `width_eq`. -/
-
-section Assembly
-
-variable {d : ℕ} [NeZero d]
-
-/-- **The soundness of the certificate from the one-step bound.**  If for every well-formed
-certificate valid at `q` there are a spacing, a transverse half-width fitting the recorded width,
-and a planar density that percolates at which the one-step bound holds, then `CertificateSound2 d`
-holds for `d ≥ 3`. -/
-theorem certificateSound2_of_stepBound (hd : 3 ≤ d)
-    (hs : ∀ (C : LeftImp2.Certificate2 d) (q : unitInterval), C.WellFormed → C.ValidAt2 q →
-      ∃ (r t : ℕ) (a : unitInterval), 0 < r ∧ 2 * t ≤ C.width ∧ 0 < thetaSite 2 a ∧
-        StepBound d r t q a) :
-    LeftImp2.CertificateSound2 d := by
-  intro C q hwf hv
-  obtain ⟨r, t, a, hr, ht, ha, hstep⟩ := hs C q hwf hv
-  have hq : 0 < (q : ℝ) := coe_pos_of_validAt2 hwf hv
-  have hthin := thetaSiteOn_thin_pos_of_stepBound (r := r) (t := t) (by omega) hr q a hq ha hstep
-  exact lt_of_lt_of_le (slab_two_pos_of_thin hd t q hthin) (thetaSiteOn_slab_mono ht q)
-
-end Assembly
-
 end KNAll.Site.MacroExp
 
 end
@@ -674,8 +643,6 @@ example (d : ℕ) [NeZero d] (C : Certificate2 d) (hwf : C.WellFormed) (c : Site
 #check @KNAll.Site.MacroExp.density_le_prob_of_shellWindow
 
 -- the assembly, from the one-step bound
-#check @KNAll.Site.MacroExp.certificateSound2_of_stepBound
-
 #print axioms KNAll.Site.MacroExp.card_seed_le
 #print axioms KNAll.Site.MacroExp.card_seed_le_seedSize
 #print axioms KNAll.Site.MacroExp.card_le_of_forall_adj
@@ -691,7 +658,6 @@ example (d : ℕ) [NeZero d] (C : Certificate2 d) (hwf : C.WellFormed) (c : Site
 #print axioms KNAll.Site.MacroExp.levelOf_D
 #print axioms KNAll.Site.MacroExp.lt_prob_connWithinSet_of_shellWindow
 #print axioms KNAll.Site.MacroExp.density_le_prob_of_shellWindow
-#print axioms KNAll.Site.MacroExp.certificateSound2_of_stepBound
 #print axioms KNAll.Site.LeftImp2.Certificate2.WellFormed.fits
 
 end CoImportCheck

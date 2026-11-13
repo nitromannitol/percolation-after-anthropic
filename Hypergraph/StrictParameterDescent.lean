@@ -152,79 +152,11 @@ section ReachableBridge
 
 variable {d : Nat} [NeZero d]
 
-/-- Existing finite `Certificate2` soundness implies whole-lattice strict descent.  The endpoint
-at `p < 1` is the proved certificate stability/reduction; at `p = 1`, the already proved existence
-of a percolating site parameter below one supplies the strict improvement. -/
-theorem strictParameterDescent_of_certificateSound2 (hd : 3 ≤ d)
-    (hsound : LeftImp2.CertificateSound2 d) : StrictParameterDescent d := by
-  intro p hp
-  have hp0 : 0 < (p : Real) :=
-    lt_of_lt_of_le hp (thetaSiteOn_le_coe (zdGraph d) (0 : Site d) p)
-  by_cases hp1 : (p : Real) < 1
-  · have hred := LeftImp2.siteSlabReductionBelow_of_certificateSound2 d hsound
-    obtain ⟨k, q, hqp, hqslab⟩ := hred p hp0 hp1 hp
-    exact ⟨q, hqp, lt_of_lt_of_le hqslab (thetaSiteOn_slab_le d k q)⟩
-  · have hpEq : (p : Real) = 1 := le_antisymm p.2.2 (not_lt.mp hp1)
-    obtain ⟨q, hq1, hqpos⟩ := exists_thetaSite_pos d (by omega)
-    exact ⟨q, by rwa [hpEq], hqpos⟩
-
-/-- The direct critical endpoint from `Certificate2` soundness, now explicitly factored through
-whole-lattice strict parameter descent. -/
-theorem siteCriticality_of_certificateSound2_via_strictDescent (hd : 3 ≤ d)
-    (hsound : LeftImp2.CertificateSound2 d) : SiteCriticality d :=
-  siteCriticality_of_strictParameterDescent d
-    (strictParameterDescent_of_certificateSound2 hd hsound)
-
-/-- The exact open interpreter construction consumed by reachable-state soundness.  It contains
-no theorem field and no arbitrary-state physical assertion: certificates are required only for
-states literally reached by the run. -/
-def ReachableAdaptiveMacroPlanSoundness : Prop :=
-  ∀ (C : LeftImp2.Certificate2 d) (q : unitInterval),
-    C.WellFormed → C.ValidAt2 q →
-    ∃ (r t : Nat)
-      (h0 : CoreReachSafe.Tr (Site d) (Site 2))
-      (E : ∀ n, ABDAdaptReg.Exploration (Site d) (zdGraph 2)
-        (box 2 n) 0 (MacroExp.tgt n)),
-      0 < r ∧ 2 * t ≤ C.width ∧
-      h0.base = MacroExp.start d r t ∧ h0.failed = ∅ ∧
-      (∀ n, (E n).density = fun _ : Site d => q) ∧
-      (∀ n, (E n).Admissible h0) ∧
-      (∀ n k, CoreReachSafe.Reachable (E n) h0 k → CoreReachSafe.Physical d r t k) ∧
-      (∀ n h, (E n).Admissible h →
-        ¬ h.Terminal (zdGraph 2) (box 2 n) 0 (MacroExp.tgt n) →
-        (CoreSafe.successParam : Real) ≤
-          h.prob (fun _ : Site d => q) ((E n).success h))
-
-/-- The reachable adaptive interface discharges the existing finite-certificate soundness
-proposition. -/
-theorem certificateSound2_of_reachableAdaptiveMacroPlan (hd : 3 ≤ d)
-    (hmacro : ReachableAdaptiveMacroPlanSoundness (d := d)) :
-    LeftImp2.CertificateSound2 d :=
-  CoreReachSafe.certificateSound2_of_reachable_adaptive_safe hd hmacro
-
-/-- A reachable, physically certified adaptive macro interpreter gives strict descent. -/
-theorem strictParameterDescent_of_reachableAdaptiveMacroPlan (hd : 3 ≤ d)
-    (hmacro : ReachableAdaptiveMacroPlanSoundness (d := d)) :
-    StrictParameterDescent d :=
-  strictParameterDescent_of_certificateSound2 hd
-    (certificateSound2_of_reachableAdaptiveMacroPlan hd hmacro)
-
-/-- **Reachable adaptive macro-plan capstone.**  Supplying the one explicit interpreter interface
-proves absence of site percolation at the critical point in every dimension `d ≥ 3`. -/
-theorem siteCriticality_of_reachableAdaptiveMacroPlan (hd : 3 ≤ d)
-    (hmacro : ReachableAdaptiveMacroPlanSoundness (d := d)) :
-    thetaSite d (criticalProbSiteI d) = 0 :=
-  siteCriticality_of_strictParameterDescent d
-    (strictParameterDescent_of_reachableAdaptiveMacroPlan hd hmacro)
-
 end ReachableBridge
 
 #print axioms KNAll.Site.siteCriticality_of_strictParameterDescent
 #print axioms KNAll.Site.ExactTargetPlan.strictParameterDescent_of_finiteMacroPlan
 #print axioms KNAll.Site.ExactTargetPlan.siteCriticality_of_finiteMacroPlan
-#print axioms KNAll.Site.strictParameterDescent_of_reachableAdaptiveMacroPlan
-#print axioms KNAll.Site.siteCriticality_of_reachableAdaptiveMacroPlan
-
 end KNAll.Site
 
 end

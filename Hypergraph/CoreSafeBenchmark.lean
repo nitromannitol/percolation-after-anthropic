@@ -257,38 +257,9 @@ theorem benchmark_le_bern_of_start {d : Nat} [NeZero d] (r t n : Nat)
       subst v
       simp
 
-/-- Slab soundness with the safe benchmark discharged once and for all.  The caller now supplies
-only the physical accepted exploration and its history-uniform step estimate at `successParam`.
--/
-theorem certificateSound2_of_adaptive_safe {d : Nat} [NeZero d] (hd : 3 ≤ d)
-    (hs : forall (C : LeftImp2.Certificate2 d) (q : unitInterval),
-      C.WellFormed → C.ValidAt2 q →
-      exists (r t : Nat) (delta : Real)
-        (h0 : CoreAdaptSound.Tr (Site d) Plane)
-        (E : forall n, ABDAdaptReg.Exploration (Site d) (zdGraph 2)
-          (box 2 n) 0 (MacroExp.tgt n)),
-        0 < r ∧ 2 * t ≤ C.width ∧
-        h0.base = MacroExp.start d r t ∧ h0.failed = ∅ ∧
-        (forall n, (E n).density = fun _ : Site d => q) ∧
-        (forall n, (E n).Admissible h0) ∧
-        (forall n k, (E n).Admissible k → MacroExp.Good d r t k.base q delta) ∧
-        (forall n h, (E n).Admissible h →
-          ¬ h.Terminal (zdGraph 2) (box 2 n) 0 (MacroExp.tgt n) →
-          (successParam : Real) ≤ h.prob (fun _ : Site d => q) ((E n).success h))) :
-    LeftImp2.CertificateSound2 d := by
-  apply CoreAdaptSound.certificateSound2_of_adaptive hd
-  intro C q hwf hv
-  obtain ⟨r, t, delta, h0, E, hr, ht, hbase, hfailed, hdensity, hstart,
-    hadmGood, hstep⟩ := hs C q hwf hv
-  exact ⟨r, t, successParam, benchmark, delta, h0, E, hr, ht, benchmark_pos,
-    hbase, hfailed, hdensity, hstart, hadmGood,
-    (fun n => benchmark_le_bern_of_start r t n h0 hbase hfailed), hstep⟩
-
 #print axioms KNAll.Site.CoreSafe.iid_safe_percolates_origin
 #print axioms KNAll.Site.CoreSafe.benchmark_le_pinned_safeTargetConn
 #print axioms KNAll.Site.CoreSafe.benchmark_le_bern_of_start
-#print axioms KNAll.Site.CoreSafe.certificateSound2_of_adaptive_safe
-
 end KNAll.Site.CoreSafe
 
 end

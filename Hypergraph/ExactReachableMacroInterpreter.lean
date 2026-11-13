@@ -9,9 +9,8 @@ set_option maxHeartbeats 1000000
 /-!
 # The exact reachable macro interpreter
 
-`StrictParameterDescent.ReachableAdaptiveMacroPlanSoundness` is the last interface standing between
-the finite certificate machinery and `thetaSite d (criticalProbSiteI d) = 0`.  This module builds
-the interpreter it asks for out of objects that already exist:
+This module builds the interpreter for the finite certificate machinery out of objects that already
+exist:
 
 * the exploration is the concrete `CoreAcceptedAssembly.exploration`, instantiated at the
   centre-aware total direction maps `ExactDirectionMaps.axis`/`ExactDirectionMaps.sign`, whose two
@@ -248,8 +247,8 @@ theorem exists_depth_and_budget_fit (eps : Real)
 
 /-- **Assembly.**  A real `Certificate2` well formed and valid at `q`, together with finite stopped
 scales `s`, `K` fitting the certificate corridor, the start reservation estimate and the single
-local accepted-state success estimate, produces the exact tuple demanded by
-`ReachableAdaptiveMacroPlanSoundness`.
+local accepted-state success estimate, produces the exact tuple of a reachable
+adaptive macro plan.
 
 `r` and `t` are the certificate's own `corridor` and `halfWidth`; no scale or width interface is
 postulated.  Every clause except the last is proved here. -/
@@ -321,33 +320,7 @@ theorem reachable_tuple_of_initialWindows
       hlong hplanar htrans hwindow
   exact reachable_tuple_of_localAcceptedSuccess hd C q hwf hv s K hs hbudget hinit hsucc
 
-/-! ## The capstone, with the remaining input displayed -/
-
-/-- The still-open interpreter input, per certificate and parameter: finite stopped scales fitting
-the certificate corridor, the start reservation estimate, and the local accepted-state success
-estimate.  Both analytic components are visible; nothing is packed into a structure. -/
-def MacroInterpreterInput (d : Nat) [NeZero d] (hd : 2 ≤ d) : Prop :=
-  ∀ (C : LeftImp2.Certificate2 d) (q : unitInterval) (hwf : C.WellFormed), C.ValidAt2 q →
-    ∃ (s K : Nat) (hs : 0 < s) (hbudget : 10 * s * K ≤ 10 * C.corridor),
-      CoreInitial.InitialCoreBounds (d := d) C.corridor C.halfWidth q C.eps ∧
-      LocalAcceptedSuccess hd C.corridor C.halfWidth s K q C.eps
-        (corridor_pos hwf) (two_corridor_le_halfWidth hwf) hs hbudget
-
-/-- The interpreter input discharges the reachable adaptive macro-plan interface. -/
-theorem reachableAdaptiveMacroPlanSoundness_of_input (hd : 3 ≤ d)
-    (hinput : MacroInterpreterInput d (by omega : 2 ≤ d)) :
-    ReachableAdaptiveMacroPlanSoundness (d := d) := by
-  intro C q hwf hv
-  obtain ⟨s, K, hs, hbudget, hinit, hsucc⟩ := hinput C q hwf hv
-  exact reachable_tuple_of_localAcceptedSuccess hd C q hwf hv s K hs hbudget hinit hsucc
-
-/-- **Capstone.**  The interpreter input proves absence of site percolation at the critical point
-in every dimension `d ≥ 3`. -/
-theorem siteCriticality_of_input (hd : 3 ≤ d)
-    (hinput : MacroInterpreterInput d (by omega : 2 ≤ d)) :
-    thetaSite d (criticalProbSiteI d) = 0 :=
-  siteCriticality_of_reachableAdaptiveMacroPlan hd
-    (reachableAdaptiveMacroPlanSoundness_of_input hd hinput)
+/-! ## Axiom audit -/
 
 #print axioms KNAll.Site.ExactReachableMacro.localAcceptedSuccess_of_families
 #print axioms KNAll.Site.ExactReachableMacro.localAcceptedSuccess_of_families_v15
@@ -356,9 +329,6 @@ theorem siteCriticality_of_input (hd : 3 ≤ d)
 #print axioms KNAll.Site.ExactReachableMacro.reachable_physical
 #print axioms KNAll.Site.ExactReachableMacro.reachable_tuple_of_localAcceptedSuccess
 #print axioms KNAll.Site.ExactReachableMacro.reachable_tuple_of_initialWindows
-#print axioms KNAll.Site.ExactReachableMacro.reachableAdaptiveMacroPlanSoundness_of_input
-#print axioms KNAll.Site.ExactReachableMacro.siteCriticality_of_input
-
 end KNAll.Site.ExactReachableMacro
 
 end

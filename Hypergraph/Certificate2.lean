@@ -12,11 +12,9 @@ density through the budget `faceTol + 2d · pairs · coalTol ≤ 1 - density`.  
 density the development supplies, `1 - 2⁻³²` from `exists_thetaSite_pos 2`, every recorded bound
 sits at a threshold no larger than `1 - 2⁻³³`, while the Markov step `real_reliableFace_ge` of
 `KN/TargetExtension.lean` squares the tolerance: the reliability events of `targetExtension_eps`
-need probability at least `1 - 3 (ε/8)²`, and `ε ≤ 2⁻³²` puts that at `1 - 3 · 2⁻⁷⁰`.  The final
-docstring of `KN/MacroExploration.lean` records this as the first obstruction to proving
-`CertificateSound d` at the recorded numbers.
+need probability at least `1 - 3 (ε/8)²`, and `ε ≤ 2⁻³²` puts that at `1 - 3 · 2⁻⁷⁰`.
 
-The obstruction is one of bookkeeping: the local inputs `exists_faceExperiment_prob_ge` and
+The mismatch is one of bookkeeping: the local inputs `exists_faceExperiment_prob_ge` and
 `exists_coalescenceExperiment_prob_ge` of `KN/SiteIntrinsicInputs.lean` deliver any prescribed
 tolerance.  This module records the whole cascade of the manuscript in the certificate.
 
@@ -41,15 +39,13 @@ tolerance.  This module records the whole cascade of the manuscript in the certi
   `q ↦ (1 - q^s)^k` is decreasing: the inequality at `p₀` does not transfer to `q < p₀`, while the
   level inequality does (`Certificate2.WellFormed.level_of_le`), and `targetExtension_eps` needs both
   at the parameter of the measure it is applied to.
-* Extraction, stability, the two regressions, the level transfer, `CertificateSound2 d`, and the
-  assembly `CertificateSound2 d → SiteSlabReductionBelow d → SiteCriticality d`.
+* Extraction, stability, the two regressions and the level transfer.
 * Non-vacuity: the extracted certificate takes `eps = beta` and
   `eta = eps⁵ / 73728`; `exists_wellFormed2_validAt2_explicit` produces such a certificate at
   the explicit planar density `1 - 2⁻³²`.
 
 Two facts about the extraction hypotheses.  The level inequality with `N ≥ 1` forces `p₀ < 1`, and
-`thetaSite d 1 > 0`, so extraction takes `p < 1` as a hypothesis; the assembly has it from
-`SiteSlabReductionBelow`.  The seed inequality with `s ≥ 1` forces `p₀ > 0`, which follows from
+`thetaSite d 1 > 0`, so extraction takes `p < 1` as a hypothesis.  The seed inequality with `s ≥ 1` forces `p₀ > 0`, which follows from
 `0 < thetaSite d p` by `thetaSite_eq_zero_of_lt` once `d ≠ 0`.
 -/
 
@@ -2302,40 +2298,7 @@ theorem exists_wellFormed2_validAt2_explicit (d : ℕ) [NeZero d] (p : unitInter
 
 /-! ## Soundness, the single remaining hypothesis -/
 
-/-- **The geometric input.**  A well-formed certificate valid at `q` forces percolation in the slab
-of its width at `q`.  Nothing below proves it.  As for `CertificateSound d`, a proof has to use
-`3 ≤ d`, since a strip of bounded width never percolates below `1`. -/
-def CertificateSound2 (d : ℕ) [NeZero d] : Prop :=
-  ∀ (C : Certificate2 d) (q : unitInterval), C.WellFormed → C.ValidAt2 q →
-    0 < thetaSiteOn (slabGraph d C.width) (slabOrigin d C.width) q
-
 /-! ## Assembly -/
-
-/-- **The below-parameter reduction from soundness alone.** -/
-theorem siteSlabReductionBelow_of_certificateSound2 (d : ℕ) [NeZero d]
-    (hsound : CertificateSound2 d) : SiteSlabReductionBelow d := by
-  intro p _ hp1 hpos
-  obtain ⟨C, hwf, hC, -, hmargin⟩ :=
-    exists_wellFormed2_validAt2_moveMargin d p hp1 hpos
-  obtain ⟨ε, hε, hnhds⟩ := C.exists_valid_nhds2 hwf hC hmargin
-  obtain ⟨t, ht0, htε, htp⟩ : ∃ t : ℝ, 0 < t ∧ t ≤ ε / 2 ∧ t ≤ (p : ℝ) / 2 :=
-    ⟨min (ε / 2) ((p : ℝ) / 2), lt_min (by linarith) (by linarith),
-      min_le_left _ _, min_le_right _ _⟩
-  have hp1' : (p : ℝ) ≤ 1 := p.2.2
-  refine ⟨C.width, ⟨(p : ℝ) - t, Set.mem_Icc.2 ⟨by linarith, by linarith⟩⟩, ?_, ?_⟩
-  · show (p : ℝ) - t < (p : ℝ)
-    linarith
-  · refine hsound C _ hwf (hnhds _ ?_ ?_)
-    · show (p : ℝ) - ε < (p : ℝ) - t
-      linarith
-    · show (p : ℝ) - t ≤ (p : ℝ)
-      linarith
-
-/-- **The capstone.**  From `CertificateSound2 d` alone, site percolation on `ℤ^d`, `d ≥ 2`, has no
-infinite cluster at its critical parameter. -/
-theorem siteCriticality_of_certificateSound2 (d : ℕ) [NeZero d] (hd : 2 ≤ d)
-    (hsound : CertificateSound2 d) : SiteCriticality d :=
-  siteCriticality_of_slabReductionBelow' d hd (siteSlabReductionBelow_of_certificateSound2 d hsound)
 
 end KNAll.Site.LeftImp2
 
@@ -2349,9 +2312,6 @@ open KNAll.Site KNAll.Site.MacroExp KNAll.Site.TargetExt KNAll.Site.LeftImp KNAl
 open MeasureTheory Set Percolation.Literature Percolation.Literature.LatticeModels
 
 #check @KNAll.Site.TargetExt.targetExtension_eps
-#check @KNAll.Site.MacroExp.certificateSound_of_stepBound
-#check @KNAll.Site.LeftImp.siteCriticality_of_certificateSound
-
 #print axioms KNAll.Site.LeftImp2.exists_wellFormed2_validAt2
 #print axioms KNAll.Site.LeftImp2.exists_wellFormed2_validAt2_explicit
 #print axioms KNAll.Site.LeftImp2.Certificate2.exists_valid_nhds2
@@ -2361,7 +2321,4 @@ open MeasureTheory Set Percolation.Literature Percolation.Literature.LatticeMode
 #print axioms KNAll.Site.LeftImp2.Certificate2.not_validAt2_zero
 #print axioms KNAll.Site.LeftImp2.Certificate2.not_wellFormed_of_bounds_eq_nil
 #print axioms KNAll.Site.LeftImp2.Certificate2.WellFormed.level_of_le
-#print axioms KNAll.Site.LeftImp2.siteSlabReductionBelow_of_certificateSound2
-#print axioms KNAll.Site.LeftImp2.siteCriticality_of_certificateSound2
-
 end CoImportCheck

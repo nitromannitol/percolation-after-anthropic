@@ -4,7 +4,7 @@ import Hypergraph.GateTwoChain
 # A concrete certificate for the below-parameter route
 
 This module builds the interface around a certificate that extraction actually produces, so that
-soundness is a statement about that certificate and not about every list of real numbers.
+statements are about that certificate and not about every list of real numbers.
 
 * `Certificate d` carries the scales chosen at the supercritical parameter, a comparison density for
   the coarse plane, two tolerances, and a finite list of pairs `(experiment, threshold)`.
@@ -32,19 +32,9 @@ soundness is a statement about that certificate and not about every list of real
 * `Certificate.exists_valid_nhds`, the stability: a certificate valid at `p` is valid on a
   neighbourhood of `p`.  This is `CylinderExperiment.abs_prob_sub_le` applied bound by bound, with
   the radius taken as the minimum along the list.
-* `CertificateSound d`, the single remaining hypothesis: a well-formed certificate valid at `q` forces
-  percolation in the slab of its width at `q`.  Nothing here proves it.
-* `siteSlabReductionBelow_of_certificateSound` and `siteCriticality_of_certificateSound`, the
-  assembly: `CertificateSound d → SiteSlabReductionBelow d`, and with the endgame of
-  `KN/SiteEndgame.lean`, `CertificateSound d → SiteCriticality d` for `d ≥ 2`.
-
-Two remarks on scope.  The slab `slab d k` is `{x | 0 ≤ x 0 ≤ k}`, which for `d = 2` is a strip, and
-a strip of bounded width does not percolate at any parameter below `1`; so `SiteSlabReductionBelow 2`
-is false, and since extraction and stability are proved for every `d`, `CertificateSound 2` is false
-as well.  A proof of `CertificateSound d` has to use `3 ≤ d`.  Second, the comparison density is
-required to percolate on the plane `ℤ^2` and not on the coarse lattice `ℤ^(d-1)` of the slab; the
-plane embeds in every such lattice, so this is the stronger requirement and the one that costs
-extraction nothing.
+The comparison density is required to percolate on the plane `ℤ^2` and not on the coarse lattice
+`ℤ^(d-1)` of the slab; the plane embeds in every such lattice, so this is the stronger requirement
+and the one that costs extraction nothing.
 -/
 
 noncomputable section
@@ -438,47 +428,7 @@ theorem exists_wellFormed (d : ℕ) [NeZero d] (hd : 2 ≤ d) : ∃ C : Certific
 
 /-! ## Soundness, the single remaining hypothesis -/
 
-/-- **The geometric input.**  A well-formed certificate valid at `q` forces percolation in the slab
-of its width at `q`.  This is the only proposition below that is not proved.
-
-The certificate is well-formed, so its list contains the
-face-hitting experiment and every coalescence experiment of its source box at thresholds within the
-budget of a comparison density that percolates on the plane, and
-`Certificate.not_validAt_zero` shows that validity fails at `q = 0`.  For `d = 2` the slab is a
-strip, which never percolates below `1`, so this proposition is false in dimension `2` and a proof
-of it has to use `3 ≤ d`. -/
-def CertificateSound (d : ℕ) [NeZero d] : Prop :=
-  ∀ (C : Certificate d) (q : unitInterval), C.WellFormed → C.ValidAt q →
-    0 < thetaSiteOn (slabGraph d C.width) (slabOrigin d C.width) q
-
 /-! ## Assembly -/
-
-/-- **The below-parameter reduction from soundness alone.**  Percolation at `p` yields a well-formed
-certificate valid at `p`; it stays valid on a neighbourhood of `p`, which contains parameters
-strictly below `p`; soundness turns validity there into percolation in the slab. -/
-theorem siteSlabReductionBelow_of_certificateSound (d : ℕ) [NeZero d]
-    (hsound : CertificateSound d) : SiteSlabReductionBelow d := by
-  intro p _ _ hpos
-  obtain ⟨C, hwf, hC⟩ := exists_wellFormed_validAt d p hpos
-  obtain ⟨ε, hε, hnhds⟩ := C.exists_valid_nhds hC
-  obtain ⟨t, ht0, htε, htp⟩ : ∃ t : ℝ, 0 < t ∧ t ≤ ε / 2 ∧ t ≤ (p : ℝ) / 2 :=
-    ⟨min (ε / 2) ((p : ℝ) / 2), lt_min (by linarith) (by linarith),
-      min_le_left _ _, min_le_right _ _⟩
-  have hp1' : (p : ℝ) ≤ 1 := p.2.2
-  refine ⟨C.width, ⟨(p : ℝ) - t, Set.mem_Icc.2 ⟨by linarith, by linarith⟩⟩, ?_, ?_⟩
-  · show (p : ℝ) - t < (p : ℝ)
-    linarith
-  · refine hsound C _ hwf (hnhds _ ?_)
-    show |((p : ℝ) - t) - (p : ℝ)| < ε
-    have hrw : ((p : ℝ) - t) - (p : ℝ) = -t := by ring
-    rw [hrw, abs_neg, abs_of_pos ht0]
-    linarith
-
-/-- **The capstone.**  From `CertificateSound d` alone, site percolation on `ℤ^d`, `d ≥ 2`, has no
-infinite cluster at its critical parameter. -/
-theorem siteCriticality_of_certificateSound (d : ℕ) [NeZero d] (hd : 2 ≤ d)
-    (hsound : CertificateSound d) : SiteCriticality d :=
-  siteCriticality_of_slabReductionBelow' d hd (siteSlabReductionBelow_of_certificateSound d hsound)
 
 end KNAll.Site.LeftImp
 

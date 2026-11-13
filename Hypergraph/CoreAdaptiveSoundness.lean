@@ -240,33 +240,6 @@ theorem thetaSiteOn_thin_pos_of_adaptive (hd : 2 ≤ d) (hr : 0 < r)
   rw [Set.mem_iInter] at homega
   exact MacroExp.infinite_of_forall_far hr homega
 
-/-- Certificate soundness routed through the admissibility-indexed bounded-damage exploration. -/
-theorem certificateSound2_of_adaptive (hd : 3 ≤ d)
-    (hs : ∀ (C : LeftImp2.Certificate2 d) (q : unitInterval),
-      C.WellFormed → C.ValidAt2 q →
-      ∃ (r t : Nat) (a : unitInterval) (c δ : Real)
-        (h0 : Tr (Site d) (Site 2))
-        (E : ∀ n, ABDAdaptReg.Exploration (Site d) (zdGraph 2)
-          (box 2 n) 0 (MacroExp.tgt n)),
-        0 < r ∧ 2 * t ≤ C.width ∧ 0 < c ∧
-        h0.base = MacroExp.start d r t ∧ h0.failed = ∅ ∧
-        (∀ n, (E n).density = fun _ : Site d => q) ∧
-        (∀ n, (E n).Admissible h0) ∧
-        (∀ n k, (E n).Admissible k → MacroExp.Good d r t k.base q δ) ∧
-        (∀ n, c ≤ h0.bern a (zdGraph 2) (box 2 n) 0 (MacroExp.tgt n)) ∧
-        (∀ n h, (E n).Admissible h →
-          ¬ h.Terminal (zdGraph 2) (box 2 n) 0 (MacroExp.tgt n) →
-          (a : Real) ≤ h.prob (fun _ : Site d => q) ((E n).success h))) :
-    LeftImp2.CertificateSound2 d := by
-  intro C q hwf hv
-  obtain ⟨r, t, a, c, δ, h0, E, hr, ht, hc, hbase, hfailed,
-    hdensity, hstart, hadmGood, hbern, hstep⟩ := hs C q hwf hv
-  have hq : 0 < (q : Real) := MacroExp.coe_pos_of_validAt2 hwf hv
-  have hthin := thetaSiteOn_thin_pos_of_adaptive (d := d) (r := r) (t := t)
-    (by omega) hr q a hq hc δ E h0 hbase hfailed hdensity hstart hadmGood hbern hstep
-  exact lt_of_lt_of_le (MacroExp.slab_two_pos_of_thin hd t q hthin)
-    (MacroExp.thetaSiteOn_slab_mono ht q)
-
 end Slab
 
 #print axioms KNAll.Site.CoreAdaptSound.Exploration.admissible_run
@@ -274,8 +247,6 @@ end Slab
 #print axioms KNAll.Site.CoreAdaptSound.far_of_adaptive_run_reaches
 #print axioms KNAll.Site.CoreAdaptSound.le_real_far_of_adaptive
 #print axioms KNAll.Site.CoreAdaptSound.thetaSiteOn_thin_pos_of_adaptive
-#print axioms KNAll.Site.CoreAdaptSound.certificateSound2_of_adaptive
-
 end KNAll.Site.CoreAdaptSound
 
 end

@@ -402,93 +402,6 @@ theorem thetaSiteOn_thin_pos_of_reachable_adaptive (hd : 2 ≤ d) (hr : 0 < r)
   rw [Set.mem_iInter] at homega
   exact MacroExp.infinite_of_forall_far hr homega
 
-/-- Certificate soundness with the reachable-state physical invariant exposed honestly. -/
-theorem certificateSound2_of_reachable_adaptive (hd : 3 ≤ d)
-    (hsound : ∀ (C : LeftImp2.Certificate2 d) (q : unitInterval),
-      C.WellFormed → C.ValidAt2 q →
-      ∃ (r t : Nat) (a : unitInterval) (c : Real)
-        (h0 : Tr (Site d) (Site 2))
-        (E : ∀ n, ABDAdaptReg.Exploration (Site d) (zdGraph 2)
-          (box 2 n) 0 (MacroExp.tgt n)),
-        0 < r ∧ 2 * t ≤ C.width ∧ 0 < c ∧
-        h0.base = MacroExp.start d r t ∧
-        (∀ n, (E n).density = fun _ : Site d => q) ∧
-        (∀ n, (E n).Admissible h0) ∧
-        (∀ n k, Reachable (E n) h0 k → Physical d r t k) ∧
-        (∀ n, c ≤ h0.bern a (zdGraph 2) (box 2 n) 0 (MacroExp.tgt n)) ∧
-        (∀ n h, (E n).Admissible h →
-          ¬ h.Terminal (zdGraph 2) (box 2 n) 0 (MacroExp.tgt n) →
-          (a : Real) ≤ h.prob (fun _ : Site d => q) ((E n).success h))) :
-    LeftImp2.CertificateSound2 d := by
-  intro C q hwf hv
-  obtain ⟨r, t, a, c, h0, E, hr, ht, hc, hbase,
-    hdensity, hstart, hreachablePhysical, hbern, hstep⟩ := hsound C q hwf hv
-  have hq : 0 < (q : Real) := MacroExp.coe_pos_of_validAt2 hwf hv
-  have hthin := thetaSiteOn_thin_pos_of_reachable_adaptive (d := d) (r := r) (t := t)
-    (by omega) hr q a hq hc E h0 hbase hdensity hstart
-    hreachablePhysical hbern hstep
-  exact lt_of_lt_of_le (MacroExp.slab_two_pos_of_thin hd t q hthin)
-    (MacroExp.thetaSiteOn_slab_mono ht q)
-
-/-- Safe-benchmark certificate wrapper, with `Physical` restricted to reachable histories. -/
-theorem certificateSound2_of_reachable_adaptive_safe (hd : 3 ≤ d)
-    (hsound : ∀ (C : LeftImp2.Certificate2 d) (q : unitInterval),
-      C.WellFormed → C.ValidAt2 q →
-      ∃ (r t : Nat)
-        (h0 : Tr (Site d) (Site 2))
-        (E : ∀ n, ABDAdaptReg.Exploration (Site d) (zdGraph 2)
-          (box 2 n) 0 (MacroExp.tgt n)),
-        0 < r ∧ 2 * t ≤ C.width ∧
-        h0.base = MacroExp.start d r t ∧ h0.failed = ∅ ∧
-        (∀ n, (E n).density = fun _ : Site d => q) ∧
-        (∀ n, (E n).Admissible h0) ∧
-        (∀ n k, Reachable (E n) h0 k → Physical d r t k) ∧
-        (∀ n h, (E n).Admissible h →
-          ¬ h.Terminal (zdGraph 2) (box 2 n) 0 (MacroExp.tgt n) →
-          (CoreSafe.successParam : Real) ≤
-            h.prob (fun _ : Site d => q) ((E n).success h))) :
-    LeftImp2.CertificateSound2 d := by
-  apply certificateSound2_of_reachable_adaptive hd
-  intro C q hwf hv
-  obtain ⟨r, t, h0, E, hr, ht, hbase, hfailed, hdensity, hstart,
-    hreachablePhysical, hstep⟩ := hsound C q hwf hv
-  exact ⟨r, t, CoreSafe.successParam, CoreSafe.benchmark, h0, E,
-    hr, ht, CoreSafe.benchmark_pos, hbase, hdensity, hstart,
-    hreachablePhysical,
-    (fun n => CoreSafe.benchmark_le_bern_of_start r t n h0 hbase hfailed), hstep⟩
-
-/-- Assembly-facing safe wrapper.  Rather than asking the caller to quantify over reachable
-histories, it accepts the local one-step physical rule; `physical_run_of_preserves` supplies the
-reachable invariant used by the slab proof. -/
-theorem certificateSound2_of_preserving_adaptive_safe (hd : 3 ≤ d)
-    (hsound : ∀ (C : LeftImp2.Certificate2 d) (q : unitInterval),
-      C.WellFormed → C.ValidAt2 q →
-      ∃ (r t : Nat)
-        (h0 : Tr (Site d) (Site 2))
-        (E : ∀ n, ABDAdaptReg.Exploration (Site d) (zdGraph 2)
-          (box 2 n) 0 (MacroExp.tgt n)),
-        0 < r ∧ 2 * t ≤ C.width ∧
-        h0.base = MacroExp.start d r t ∧ h0.failed = ∅ ∧
-        (∀ n, (E n).density = fun _ : Site d => q) ∧
-        (∀ n, (E n).Admissible h0) ∧
-        (∀ n, PreservesPhysical (r := r) (t := t) (E n)) ∧
-        (∀ n h, (E n).Admissible h →
-          ¬ h.Terminal (zdGraph 2) (box 2 n) 0 (MacroExp.tgt n) →
-          (CoreSafe.successParam : Real) ≤
-            h.prob (fun _ : Site d => q) ((E n).success h))) :
-    LeftImp2.CertificateSound2 d := by
-  apply certificateSound2_of_reachable_adaptive_safe hd
-  intro C q hwf hv
-  obtain ⟨r, t, h0, E, hr, ht, hbase, hfailed, hdensity, hstart,
-    hpres, hstep⟩ := hsound C q hwf hv
-  have hphysical0 : Physical d r t h0 :=
-    physical_of_base_eq_start (by omega) hbase
-  have hreachable : ∀ n k, Reachable (E n) h0 k → Physical d r t k := by
-    intro n k hk
-    exact physical_of_reachable (E n) (hstart n) hphysical0 (hpres n) hk
-  exact ⟨r, t, h0, E, hr, ht, hbase, hfailed, hdensity, hstart,
-    hreachable, hstep⟩
-
 end Slab
 
 /-! The exact stopped-interpreter probability bridge, re-exported for the reachable capstone. -/
@@ -500,8 +413,6 @@ abbrev acceptedExploration_prob_success_eq_prob_batchSuccess :=
 #print axioms KNAll.Site.CoreReachSafe.physical_of_reachable_acceptedExploration
 #print axioms KNAll.Site.CoreReachSafe.le_real_far_of_reachable_adaptive
 #print axioms KNAll.Site.CoreReachSafe.thetaSiteOn_thin_pos_of_reachable_adaptive
-#print axioms KNAll.Site.CoreReachSafe.certificateSound2_of_reachable_adaptive_safe
-#print axioms KNAll.Site.CoreReachSafe.certificateSound2_of_preserving_adaptive_safe
 #print axioms KNAll.Site.CoreReachSafe.acceptedExploration_prob_success_eq_prob_batchSuccess
 
 end KNAll.Site.CoreReachSafe

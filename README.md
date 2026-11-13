@@ -179,8 +179,8 @@ headline theorem.
 
 ## Size
 
-The library contains 226 Lean files with 99,464 physical lines (`KNConjectures`: 41 files and
-14,389 lines; `Hypergraph`: 185 files and 85,075 lines), on top of mathlib and the
+The library contains 226 Lean files with 99,024 physical lines (`KNConjectures`: 41 files and
+14,389 lines; `Hypergraph`: 185 files and 84,635 lines), on top of mathlib and the
 bond-percolation library of the dependency. The comparator sources under `PercolationAudit/`
 are counted separately.
 
